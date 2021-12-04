@@ -1,4 +1,4 @@
-const { decodeDiagnostics } = require("./decodeDiagnostics");
+const { decodeDiagnostics, decodeLifeSupport } = require("./decodeDiagnostics");
 const { readInput } = require("../utils/readInput");
 
 const main = async () => {
@@ -6,6 +6,9 @@ const main = async () => {
 
   const decoded = decodeDiagnostics(diagnostics);
   console.log(JSON.stringify(decoded));
+
+  const lifeSupport = decodeLifeSupport(diagnostics);
+  console.log(JSON.stringify(lifeSupport));
 };
 
 main();

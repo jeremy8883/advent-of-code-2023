@@ -1,14 +1,23 @@
 const R = require("ramda");
+const { filter } = require("ramda");
+
+const invert = (bit) => {
+  return bit === 1 ? 0 : 1;
+};
+
+const getMostCommonBit = (diagnostics, bitIndex) => {
+  const oneCount = R.sum(diagnostics.map((d) => parseInt(d[bitIndex])));
+  const zeroCount = diagnostics.length - oneCount;
+
+  return oneCount > zeroCount ? 1 : zeroCount > oneCount ? 0 : null;
+};
 
 const decodeDiagnostics = (diagnostics) => {
   const bitsLength = diagnostics[0].length;
 
   const result = R.range(0, bitsLength).reduce((acc, bitIndex) => {
-    const oneCount = R.sum(diagnostics.map((d) => parseInt(d[bitIndex])));
-    const zeroCount = diagnostics.length - oneCount;
-
-    const mostCommonBit = oneCount > zeroCount ? 1 : 0;
-    const leastCommonBit = oneCount <= zeroCount ? 1 : 0;
+    const mostCommonBit = getMostCommonBit(diagnostics, bitIndex);
+    const leastCommonBit = invert(mostCommonBit);
 
     if (acc == null) {
       return { gammaRate: mostCommonBit, epsilonRate: leastCommonBit };
@@ -26,4 +35,51 @@ const decodeDiagnostics = (diagnostics) => {
   };
 };
 
-module.exports = { decodeDiagnostics };
+const findOxygenGeneratorRating = (diagnostics, bitIndex = 0) => {
+  const bitsLength = diagnostics[0].length;
+  if (bitIndex >= bitsLength) {
+    throw new Error("This shouldn't happen?");
+  }
+
+  const mostCommonBit = getMostCommonBit(diagnostics, bitIndex) ?? 1;
+  const filtered = diagnostics.filter(
+    (d) => parseInt(d[bitIndex]) === mostCommonBit
+  );
+  if (filtered.length === 1) {
+    return parseInt(filtered[0], 2);
+  }
+
+  return findOxygenGeneratorRating(filtered, bitIndex + 1);
+};
+
+const findCo2ScrubberRating = (diagnostics, bitIndex = 0) => {
+  const bitsLength = diagnostics[0].length;
+  if (bitIndex >= bitsLength) {
+    throw new Error("This shouldn't happen?");
+  }
+
+  const mostCommonBit = getMostCommonBit(diagnostics, bitIndex);
+  const specificBit = mostCommonBit === null ? 0 : invert(mostCommonBit);
+
+  const filtered = diagnostics.filter(
+    (d) => parseInt(d[bitIndex]) === specificBit
+  );
+  if (filtered.length === 1) {
+    return parseInt(filtered[0], 2);
+  }
+
+  return findCo2ScrubberRating(filtered, bitIndex + 1);
+};
+
+const decodeLifeSupport = (diagnostics) => {
+  const oxygenGeneratorRating = findOxygenGeneratorRating(diagnostics);
+  const co2ScrubberRating = findCo2ScrubberRating(diagnostics);
+
+  return {
+    oxygenGeneratorRating,
+    co2ScrubberRating,
+    lifeSupportRating: oxygenGeneratorRating * co2ScrubberRating,
+  };
+};
+
+module.exports = { decodeDiagnostics, decodeLifeSupport };
