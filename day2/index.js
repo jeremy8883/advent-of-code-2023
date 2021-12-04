@@ -1,4 +1,4 @@
-const { getPosition } = require("./getPosition");
+const { getPosition, getPositionWithAim } = require("./getPosition");
 const { readFile } = require("fs").promises;
 
 const main = async () => {
@@ -18,6 +18,16 @@ const main = async () => {
       position.depth +
       ", Total: " +
       position.pos * position.depth
+  );
+
+  const positionWithAim = getPositionWithAim(instructions);
+  console.log(
+    "A: Pos: " +
+      positionWithAim.pos +
+      ", Depth: " +
+      positionWithAim.depth +
+      ", Total: " +
+      positionWithAim.pos * positionWithAim.depth
   );
 };
 
