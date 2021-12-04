@@ -1,12 +1,9 @@
 const { getPosition, getPositionWithAim } = require("./getPosition");
-const { readFile } = require("fs").promises;
+const { readInput } = require("../utils/readInput");
 
 const main = async () => {
-  const input = await readFile("day2/input.txt");
+  const input = await readInput("day2/input.txt");
   const instructions = input
-    .toString()
-    .split("\n")
-    .filter(Boolean)
     .map((line) => line.split(" "))
     .map(([command, amount]) => ({ command, amount: parseInt(amount) }));
 

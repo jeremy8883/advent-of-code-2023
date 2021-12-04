@@ -2,11 +2,11 @@ const {
   getIncreasedCount,
   getSlidingWindowIncreasedCount,
 } = require("./getIncreasedCount");
-const { readFile } = require("fs").promises;
+const { readInput } = require("../utils/readInput");
 
 const main = async () => {
-  const input = await readFile("day1/input.txt");
-  const readings = input.toString().split("\n").map(Number);
+  const input = await readInput("day1/input.txt");
+  const readings = input.map(Number);
 
   console.log("A: " + getIncreasedCount(readings));
   console.log("B: " + getSlidingWindowIncreasedCount(readings));
