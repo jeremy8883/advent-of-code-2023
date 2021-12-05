@@ -1,4 +1,4 @@
-const { getClouds } = require("./getClouds");
+const { getClouds, getCloudsWithDiagonals } = require("./getClouds");
 
 const vectors = [
   [
@@ -47,5 +47,12 @@ describe("getClouds", () => {
   it("finds the clouds", () => {
     const result = getClouds(vectors);
     expect(result).toEqual(5);
+  });
+});
+
+describe("getCloudsWithDiagonals", () => {
+  it("finds the clouds", () => {
+    const result = getCloudsWithDiagonals(vectors);
+    expect(result).toEqual(12);
   });
 });

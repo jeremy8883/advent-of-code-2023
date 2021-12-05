@@ -1,5 +1,5 @@
 const R = require("ramda");
-const { getClouds } = require("./getClouds");
+const { getClouds, getCloudsWithDiagonals } = require("./getClouds");
 const { readInput } = require("../utils/readInput");
 
 const main = async () => {
@@ -10,6 +10,9 @@ const main = async () => {
 
   const result = getClouds(vectors);
   console.log(JSON.stringify(result));
+
+  const resultD = getCloudsWithDiagonals(vectors);
+  console.log(JSON.stringify(resultD));
 };
 
 main();

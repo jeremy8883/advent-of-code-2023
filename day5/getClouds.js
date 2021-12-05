@@ -55,8 +55,8 @@ const countGrid = (grid, gridSize, callback) => {
   return count;
 };
 
-const getClouds = (vectors) => {
-  const gridSize = {
+function getGridSize(vectors) {
+  return {
     width:
       R.apply(
         Math.max,
@@ -68,6 +68,10 @@ const getClouds = (vectors) => {
         vectors.flatMap(([pos1, pos2]) => [pos1[1], pos2[1]])
       ) + 1,
   };
+}
+
+const getClouds = (vectors) => {
+  const gridSize = getGridSize(vectors);
 
   const grid = vectors.reduce(drawSmoke, []);
 
@@ -76,4 +80,36 @@ const getClouds = (vectors) => {
   return countGrid(grid, gridSize, (c) => c > 1);
 };
 
-module.exports = { getClouds };
+const drawDiagonalLine = (grid, vector) => {
+  const normalised = R.sortBy((v) => v[0], vector);
+
+  const isGoingUp = normalised[0][1] < normalised[1][1];
+  let y = normalised[0][1];
+  for (let x = normalised[0][0]; x <= normalised[1][0]; x++) {
+    markPoint(grid, { x: x, y: isGoingUp ? y++ : y-- });
+  }
+};
+
+const drawSmokeWithDiagonals = (grid, v) => {
+  if (getIsHorizontal(v)) {
+    drawHorizontalLine(grid, v);
+  } else if (getIsVertical(v)) {
+    drawVerticalLine(grid, v);
+  } else {
+    drawDiagonalLine(grid, v);
+  }
+
+  return grid;
+};
+
+const getCloudsWithDiagonals = (vectors) => {
+  const gridSize = getGridSize(vectors);
+
+  const grid = vectors.reduce(drawSmokeWithDiagonals, []);
+
+  // console.log(grid);
+
+  return countGrid(grid, gridSize, (c) => c > 1);
+};
+
+module.exports = { getClouds, getCloudsWithDiagonals };
