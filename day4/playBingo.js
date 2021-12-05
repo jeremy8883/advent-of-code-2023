@@ -18,22 +18,22 @@ const findByColumn = (board, predicate) => {
   }
 };
 
-const getWinner = (boards) => {
-  return boards.findIndex((board) => {
+const getWinners = (boards) => {
+  return boards.reduce((acc, board, index) => {
     const winningRow = board.find((row) => row.every((cell) => cell.isChecked));
     if (winningRow) {
-      return true;
+      return [...acc, index];
     }
 
     const winningColumn = findByColumn(board, (column) =>
       column.every((cell) => cell.isChecked)
     );
     if (winningColumn) {
-      return true;
+      return [...acc, index];
     }
 
-    return false;
-  });
+    return acc;
+  }, []);
 };
 
 const getScore = (board, lastCalledNumber) => {
@@ -55,12 +55,12 @@ const playBingo = (calledNumbers, boards) => {
       cell.number === calledNumber ? { ...cell, isChecked: true } : cell
     );
 
-    const winningBoardIndex = getWinner(newBoards);
+    const winningBoardIndexes = getWinners(newBoards);
 
-    if (winningBoardIndex !== -1) {
+    if (winningBoardIndexes.length) {
       return {
-        winner: winningBoardIndex,
-        score: getScore(newBoards[winningBoardIndex], calledNumber),
+        winner: winningBoardIndexes[0],
+        score: getScore(newBoards[winningBoardIndexes[0]], calledNumber),
       };
     }
   }
@@ -68,4 +68,43 @@ const playBingo = (calledNumbers, boards) => {
   throw new Error("Nobody won!");
 };
 
-module.exports = { playBingo };
+const playBingoAndLose = (calledNumbers, boards) => {
+  let newBoards = prepBoards(boards);
+
+  for (const calledNumber of calledNumbers) {
+    newBoards = mapBoards(newBoards, (cell) =>
+      cell.number === calledNumber ? { ...cell, isChecked: true } : cell
+    );
+
+    const winningBoardIndexes = getWinners(newBoards);
+
+    if (winningBoardIndexes.length === boards.length - 1) {
+      const losingBoardIndex = newBoards.findIndex(
+        (board, index) => !winningBoardIndexes.includes(index)
+      );
+
+      const { score } = playBingo(calledNumbers, [
+        boards[losingBoardIndex],
+        boards[losingBoardIndex].map((row) =>
+          row.map((cell) => 999999999999999)
+        ),
+      ]);
+      return {
+        winner: losingBoardIndex,
+        score,
+      };
+    }
+
+    if (winningBoardIndexes.length === boards.length) {
+      throw new Error("There was more than one loser!");
+    }
+
+    if (winningBoardIndexes.length > boards.length) {
+      throw new Error("This shouldn't happen...");
+    }
+  }
+
+  throw new Error("Nobody won!");
+};
+
+module.exports = { playBingo, playBingoAndLose };

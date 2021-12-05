@@ -1,5 +1,5 @@
 const R = require("ramda");
-const { playBingo } = require("./playBingo");
+const { playBingo, playBingoAndLose } = require("./playBingo");
 const { readInput } = require("../utils/readInput");
 
 const main = async () => {
@@ -20,6 +20,9 @@ const main = async () => {
 
   const results = playBingo(calledNumbers, boards);
   console.log(JSON.stringify(results));
+
+  const loserResults = playBingoAndLose(calledNumbers, boards);
+  console.log(JSON.stringify(loserResults));
 };
 
 main();

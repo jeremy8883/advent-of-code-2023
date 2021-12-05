@@ -1,4 +1,4 @@
-const { playBingo } = require("./playBingo");
+const { playBingo, playBingoAndLose } = require("./playBingo");
 
 const boardMocks = [
   [
@@ -46,6 +46,24 @@ describe("playBingo", () => {
     expect(result).toEqual({
       winner: 1,
       score: 3626,
+    });
+  });
+});
+
+describe("playBingoAndLose", () => {
+  it("gets the losing board", () => {
+    const result = playBingoAndLose(
+      [
+        7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16,
+        // Winning number of losing board
+        13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1,
+      ],
+      boardMocks
+    );
+
+    expect(result).toEqual({
+      winner: 1,
+      score: 1924,
     });
   });
 });
