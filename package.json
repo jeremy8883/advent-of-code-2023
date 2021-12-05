@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "new": "hygen generator new-day & git stage --all",
     "test": "jest --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "hygen": "^6.1.0",
     "jest": "^27.4.3",
     "prettier": "^2.5.0"
   },
