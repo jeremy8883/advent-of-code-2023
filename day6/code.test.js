@@ -12,7 +12,10 @@ describe("Day 6: runChallengeA", () => {
 
 describe("Day 6: runChallengeB", () => {
   it("gets the results", () => {
-    const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(runChallengeB(mockInput, 18)).toEqual(26);
+
+    expect(runChallengeB(mockInput, 80)).toEqual(5934);
+
+    expect(runChallengeB(mockInput, 256)).toEqual(26984457539);
   });
 });

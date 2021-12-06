@@ -20,9 +20,16 @@ const runChallengeA = (fishList, dayCount) => {
   return cloned.length;
 };
 
-const runChallengeB = (vectors) => {
-  const result = "TODO";
-  return result;
+const runChallengeB = (fishList, dayCount) => {
+  const runDayB = R.memoizeWith(R.identity, (day) => {
+    const daysRemaining = dayCount - day;
+    if (daysRemaining <= 0) {
+      return 0;
+    }
+    return runDayB(day + 7) + runDayB(day + 9) + 1;
+  });
+
+  return fishList.reduce((acc, fish) => acc + runDayB(fish) + 1, 0);
 };
 
 module.exports = { runChallengeA, runChallengeB };
