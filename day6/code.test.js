@@ -1,11 +1,12 @@
 const { runChallengeA, runChallengeB } = require("./code");
 
-const mockInput = [];
+const mockInput = [3, 4, 3, 1, 2];
 
 describe("Day 6: runChallengeA", () => {
   it("gets the results", () => {
-    const result = runChallengeA(mockInput);
-    expect(result).toEqual("TODO");
+    expect(runChallengeA(mockInput, 18)).toEqual(26);
+
+    expect(runChallengeA(mockInput, 80)).toEqual(5934);
   });
 });
 
