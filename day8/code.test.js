@@ -162,7 +162,28 @@ describe("Day 8: runChallengeA", () => {
 
 describe("Day 8: runChallengeB", () => {
   it("gets the results", () => {
+    const result = runChallengeB([
+      {
+        uniquePatterns: [
+          "acedgfb",
+          "cdfbe",
+          "gcdfa",
+          "fbcad",
+          "dab",
+          "cefabd",
+          "cdfgeb",
+          "eafb",
+          "cagedb",
+          "ab",
+        ],
+        output: ["cdfeb", "fcadb", "cdfeb", "cdbaf"],
+      },
+    ]);
+    expect(result).toEqual(5353);
+  });
+
+  it.only("gets the results", () => {
     const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(61229);
   });
 });
