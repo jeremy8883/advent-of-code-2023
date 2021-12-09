@@ -1,4 +1,4 @@
-const { getPosition, getPositionWithAim } = require("./getPosition");
+import { getPosition, getPositionWithAim } from "./getPosition.js";
 
 describe("getPosition", () => {
   it("returns the correct position", () => {

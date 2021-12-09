@@ -1,7 +1,7 @@
 ---
 to: day<%=dayNumber%>/code.test.js
 ---
-const { runChallengeA, runChallengeB } = require("./code");
+import { runChallengeA, runChallengeB } from "./code.js";
 
 const mockInput = [];
 

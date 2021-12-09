@@ -1,4 +1,4 @@
-const R = require("ramda");
+import R from "ramda";
 
 const markPoint = (grid, pos) => {
   if (grid[pos.x] == undefined) {
@@ -70,7 +70,7 @@ function getGridSize(vectors) {
   };
 }
 
-const getClouds = (vectors) => {
+export const getClouds = (vectors) => {
   const gridSize = getGridSize(vectors);
 
   const grid = vectors.reduce(drawSmoke, []);
@@ -102,7 +102,7 @@ const drawSmokeWithDiagonals = (grid, v) => {
   return grid;
 };
 
-const getCloudsWithDiagonals = (vectors) => {
+export const getCloudsWithDiagonals = (vectors) => {
   const gridSize = getGridSize(vectors);
 
   const grid = vectors.reduce(drawSmokeWithDiagonals, []);
@@ -111,5 +111,3 @@ const getCloudsWithDiagonals = (vectors) => {
 
   return countGrid(grid, gridSize, (c) => c > 1);
 };
-
-module.exports = { getClouds, getCloudsWithDiagonals };

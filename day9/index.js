@@ -1,6 +1,5 @@
-const R = require("ramda");
-const { runChallengeA, runChallengeB, parseInput } = require("./code");
-const { readInput } = require("../utils/readInput");
+import { parseInput, runChallengeA, runChallengeB } from "./code.js";
+import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
   const str = await readInput("day9/input.txt");

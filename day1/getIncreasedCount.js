@@ -1,6 +1,6 @@
-const R = require("ramda");
+import R from "ramda";
 
-const getIncreasedCount = (readings) => {
+export const getIncreasedCount = (readings) => {
   let lastValue = null;
   return R.reduce(
     (acc, val) => {
@@ -22,7 +22,7 @@ const getIncreasedCount = (readings) => {
 
 const windowSize = 3;
 
-const getSlidingWindowIncreasedCount = (readings) => {
+export const getSlidingWindowIncreasedCount = (readings) => {
   const summedReadings = R.range(0, readings.length - windowSize + 1).map(
     (i) => {
       return R.pipe(R.slice(i, i + windowSize), R.sum)(readings);
@@ -30,9 +30,4 @@ const getSlidingWindowIncreasedCount = (readings) => {
   );
 
   return getIncreasedCount(summedReadings);
-};
-
-module.exports = {
-  getIncreasedCount,
-  getSlidingWindowIncreasedCount,
 };

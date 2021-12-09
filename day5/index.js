@@ -1,6 +1,5 @@
-const R = require("ramda");
-const { getClouds, getCloudsWithDiagonals } = require("./getClouds");
-const { readInput } = require("../utils/readInput");
+import { readInput } from "../utils/readInput.js";
+import { getClouds, getCloudsWithDiagonals } from "./getClouds.js";
 
 const main = async () => {
   const lines = (await readInput("day5/input.txt")).split("\n");

@@ -1,5 +1,4 @@
-const R = require("ramda");
-const { filter } = require("ramda");
+import R from "ramda";
 
 const invert = (bit) => {
   return bit === 1 ? 0 : 1;
@@ -12,7 +11,7 @@ const getMostCommonBit = (diagnostics, bitIndex) => {
   return oneCount > zeroCount ? 1 : zeroCount > oneCount ? 0 : null;
 };
 
-const decodeDiagnostics = (diagnostics) => {
+export const decodeDiagnostics = (diagnostics) => {
   const bitsLength = diagnostics[0].length;
 
   const result = R.range(0, bitsLength).reduce((acc, bitIndex) => {
@@ -71,7 +70,7 @@ const findCo2ScrubberRating = (diagnostics, bitIndex = 0) => {
   return findCo2ScrubberRating(filtered, bitIndex + 1);
 };
 
-const decodeLifeSupport = (diagnostics) => {
+export const decodeLifeSupport = (diagnostics) => {
   const oxygenGeneratorRating = findOxygenGeneratorRating(diagnostics);
   const co2ScrubberRating = findCo2ScrubberRating(diagnostics);
 
@@ -81,5 +80,3 @@ const decodeLifeSupport = (diagnostics) => {
     lifeSupportRating: oxygenGeneratorRating * co2ScrubberRating,
   };
 };
-
-module.exports = { decodeDiagnostics, decodeLifeSupport };

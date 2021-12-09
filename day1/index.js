@@ -1,8 +1,8 @@
-const {
+import {
   getIncreasedCount,
   getSlidingWindowIncreasedCount,
-} = require("./getIncreasedCount");
-const { readInput } = require("../utils/readInput");
+} from "./getIncreasedCount.js";
+import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
   const input = await readInput("day1/input.txt");

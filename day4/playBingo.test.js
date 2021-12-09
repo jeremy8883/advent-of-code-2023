@@ -1,4 +1,4 @@
-const { playBingo, playBingoAndLose } = require("./playBingo");
+import { playBingo, playBingoAndLose } from "./playBingo.js";
 
 const boardMocks = [
   [

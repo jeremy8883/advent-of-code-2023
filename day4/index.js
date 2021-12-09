@@ -1,6 +1,6 @@
-const R = require("ramda");
-const { playBingo, playBingoAndLose } = require("./playBingo");
-const { readInput } = require("../utils/readInput");
+import R from "ramda";
+import { readInput } from "../utils/readInput.js";
+import { playBingo, playBingoAndLose } from "./playBingo.js";
 
 const main = async () => {
   const lines = (await readInput("day4/input.txt")).split("\n");

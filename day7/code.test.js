@@ -1,4 +1,4 @@
-const { runChallengeA, runChallengeB } = require("./code");
+import { runChallengeA, runChallengeB } from "./code.js";
 
 const mockInput = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14];
 

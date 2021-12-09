@@ -1,16 +1,14 @@
 ---
 to: day<%=dayNumber%>/code.js
 ---
-const R = require("ramda");
+import R from "ramda";
 
-const runChallengeA = (input) => {
+export const runChallengeA = (input) => {
   const result = "TODO";
   return result;
 };
 
-const runChallengeB = (input) => {
+export const runChallengeB = (input) => {
   const result = "TODO";
   return result;
 };
-
-module.exports = { runChallengeA, runChallengeB };

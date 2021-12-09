@@ -1,4 +1,4 @@
-const { runChallengeA, runChallengeB, parseInput } = require("./code");
+import { parseInput, runChallengeA, runChallengeB } from "./code.js";
 
 const mockInput = parseInput(
   `2199943210

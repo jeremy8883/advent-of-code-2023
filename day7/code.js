@@ -1,6 +1,6 @@
-const R = require("ramda");
+import R from "ramda";
 
-const runChallengeA = (crabs) => {
+export const runChallengeA = (crabs) => {
   const minPos = Math.min(...crabs);
   const maxPos = Math.max(...crabs);
 
@@ -11,7 +11,7 @@ const runChallengeA = (crabs) => {
   return Math.min(...distances);
 };
 
-const runChallengeB = (crabs) => {
+export const runChallengeB = (crabs) => {
   const minPos = Math.min(...crabs);
   const maxPos = Math.max(...crabs);
 
@@ -27,5 +27,3 @@ const runChallengeB = (crabs) => {
 
   return Math.min(...distances);
 };
-
-module.exports = { runChallengeA, runChallengeB };

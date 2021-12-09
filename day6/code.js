@@ -1,4 +1,4 @@
-const R = require("ramda");
+import R from "ramda";
 
 const runDay = (fishList) => {
   fishList.reduce((acc, fish, i) => {
@@ -12,7 +12,7 @@ const runDay = (fishList) => {
   }, fishList);
 };
 
-const runChallengeA = (fishList, dayCount) => {
+export const runChallengeA = (fishList, dayCount) => {
   const cloned = [...fishList];
   for (let day = 0; day < dayCount; day++) {
     runDay(cloned);
@@ -20,7 +20,7 @@ const runChallengeA = (fishList, dayCount) => {
   return cloned.length;
 };
 
-const runChallengeB = (fishList, dayCount) => {
+export const runChallengeB = (fishList, dayCount) => {
   const runDayB = R.memoizeWith(R.identity, (day) => {
     const daysRemaining = dayCount - day;
     if (daysRemaining <= 0) {
@@ -31,5 +31,3 @@ const runChallengeB = (fishList, dayCount) => {
 
   return fishList.reduce((acc, fish) => acc + runDayB(fish) + 1, 0);
 };
-
-module.exports = { runChallengeA, runChallengeB };

@@ -1,7 +1,7 @@
-const {
+import {
   getIncreasedCount,
   getSlidingWindowIncreasedCount,
-} = require("./getIncreasedCount");
+} from "./getIncreasedCount.js";
 
 describe("getIncreasedCount", () => {
   it("returns the increased count", () => {

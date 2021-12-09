@@ -1,4 +1,4 @@
-const getPosition = (instructions) => {
+export const getPosition = (instructions) => {
   return instructions.reduce(
     (acc, { command, amount }) => {
       switch (command) {
@@ -16,7 +16,7 @@ const getPosition = (instructions) => {
   );
 };
 
-const getPositionWithAim = (instructions) => {
+export const getPositionWithAim = (instructions) => {
   return instructions.reduce(
     (acc, { command, amount }) => {
       switch (command) {
@@ -44,9 +44,4 @@ const getPositionWithAim = (instructions) => {
     },
     { pos: 0, depth: 0, aim: 0 }
   );
-};
-
-module.exports = {
-  getPosition,
-  getPositionWithAim,
 };

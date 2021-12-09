@@ -1,4 +1,4 @@
-const { getClouds, getCloudsWithDiagonals } = require("./getClouds");
+import { getClouds, getCloudsWithDiagonals } from "./getClouds";
 
 const vectors = [
   [

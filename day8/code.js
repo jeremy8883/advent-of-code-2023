@@ -1,6 +1,6 @@
-const R = require("ramda");
+import R from "ramda";
 
-const runChallengeA = (input) => {
+export const runChallengeA = (input) => {
   return R.sum(
     input.map(
       ({ output }) =>
@@ -85,8 +85,6 @@ const decodeDigit = ({ uniquePatterns, output }) => {
   return parseInt(decodedOutput);
 };
 
-const runChallengeB = (input) => {
+export const runChallengeB = (input) => {
   return R.sum(input.map(decodeDigit));
 };
-
-module.exports = { runChallengeA, runChallengeB };

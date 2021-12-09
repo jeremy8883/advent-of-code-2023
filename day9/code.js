@@ -1,7 +1,8 @@
-const R = require("ramda");
-const { find2d, reduce2d, map2d } = require("../utils/2d");
+import R from "ramda";
+import { find2d, map2d, reduce2d } from "../utils/2d.js";
 
-const parseInput = (str) => str.split("\n").map((l) => l.split("").map(Number));
+export const parseInput = (str) =>
+  str.split("\n").map((l) => l.split("").map(Number));
 
 const getHasLowerPoint = (input, x, y) => {
   const value = input[y][x];
@@ -24,7 +25,7 @@ const getHasLowerPoint = (input, x, y) => {
   return false;
 };
 
-const runChallengeA = (input) => {
+export const runChallengeA = (input) => {
   return reduce2d(
     (count, value, x, y) => {
       if (!getHasLowerPoint(input, x, y)) {
@@ -77,7 +78,7 @@ const fillGrid = (grid, x, y, count = 0) => {
   return thisCount;
 };
 
-const runChallengeB = (input) => {
+export const runChallengeB = (input) => {
   let grid = prepareInput(input);
 
   let basin;
@@ -96,5 +97,3 @@ const runChallengeB = (input) => {
 
   return R.product(R.takeLast(3, R.sort(diff, sizes)));
 };
-
-module.exports = { parseInput, runChallengeA, runChallengeB };

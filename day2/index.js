@@ -1,5 +1,5 @@
-const { getPosition, getPositionWithAim } = require("./getPosition");
-const { readInput } = require("../utils/readInput");
+import { getPosition, getPositionWithAim } from "./getPosition.js";
+import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
   const input = await readInput("day2/input.txt");

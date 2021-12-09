@@ -1,9 +1,9 @@
 ---
 to: day<%=dayNumber%>/index.js
 ---
-const R = require("ramda");
-const { runChallengeA, runChallengeB } = require("./code");
-const { readInput } = require("../utils/readInput");
+import R from "ramda";
+import { runChallengeA, runChallengeB } from "./code.js";
+import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
   const lines = (await readInput("day<%=dayNumber%>/input.txt"));

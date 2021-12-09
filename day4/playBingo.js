@@ -1,4 +1,4 @@
-const R = require("ramda");
+import R from "ramda";
 
 const mapBoards = (boards, callback) =>
   boards.map((board) => board.map((row) => row.map((cell) => callback(cell))));
@@ -47,7 +47,7 @@ const getScore = (board, lastCalledNumber) => {
   );
 };
 
-const playBingo = (calledNumbers, boards) => {
+export const playBingo = (calledNumbers, boards) => {
   let newBoards = prepBoards(boards);
 
   for (const calledNumber of calledNumbers) {
@@ -68,7 +68,7 @@ const playBingo = (calledNumbers, boards) => {
   throw new Error("Nobody won!");
 };
 
-const playBingoAndLose = (calledNumbers, boards) => {
+export const playBingoAndLose = (calledNumbers, boards) => {
   let newBoards = prepBoards(boards);
 
   for (const calledNumber of calledNumbers) {
@@ -106,5 +106,3 @@ const playBingoAndLose = (calledNumbers, boards) => {
 
   throw new Error("Nobody won!");
 };
-
-module.exports = { playBingo, playBingoAndLose };

@@ -1,5 +1,5 @@
-const { decodeDiagnostics, decodeLifeSupport } = require("./decodeDiagnostics");
-const { readInput } = require("../utils/readInput");
+import { decodeDiagnostics, decodeLifeSupport } from "./decodeDiagnostics.js";
+import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
   const diagnostics = (await readInput("day3/input.txt")).split("\n");

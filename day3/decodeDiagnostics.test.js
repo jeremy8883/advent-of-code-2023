@@ -1,4 +1,4 @@
-const { decodeDiagnostics, decodeLifeSupport } = require("./decodeDiagnostics");
+import { decodeDiagnostics, decodeLifeSupport } from "./decodeDiagnostics.js";
 
 describe("decodeDiagnostics", () => {
   it("returns the correct position", () => {
