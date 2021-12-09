@@ -39,7 +39,7 @@ const pushDigit = (wireMap, possibleLocations, code) => {
 
 const allLetters = ["a", "b", "c", "d", "e", "f", "g"];
 
-const decodeDigit = ({ uniquePatterns, output }) => {
+const decodeLine = ({ uniquePatterns, output }) => {
   const one = uniquePatterns.find((digit) => digit.length === 2);
   const four = uniquePatterns.find((digit) => digit.length === 4);
   const seven = uniquePatterns.find((digit) => digit.length === 3);
@@ -86,5 +86,5 @@ const decodeDigit = ({ uniquePatterns, output }) => {
 };
 
 export const runChallengeB = (input) => {
-  return R.sum(input.map(decodeDigit));
+  return R.sum(input.map(decodeLine));
 };

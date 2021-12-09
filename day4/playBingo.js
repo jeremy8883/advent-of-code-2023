@@ -1,22 +1,11 @@
 import R from "ramda";
+import { findByColumn } from "../utils/2d.js";
 
 const mapBoards = (boards, callback) =>
   boards.map((board) => board.map((row) => row.map((cell) => callback(cell))));
 
 const prepBoards = (boards) =>
   mapBoards(boards, (number) => ({ number, isChecked: false }));
-
-const findByColumn = (board, predicate) => {
-  for (let x = 0; x < board[0].length; x++) {
-    const column = [];
-    for (let y = 0; y < board.length; y++) {
-      column.push(board[y][x]);
-    }
-    if (predicate(column)) {
-      return column;
-    }
-  }
-};
 
 const getWinners = (boards) => {
   return boards.reduce((acc, board, index) => {
@@ -25,8 +14,9 @@ const getWinners = (boards) => {
       return [...acc, index];
     }
 
-    const winningColumn = findByColumn(board, (column) =>
-      column.every((cell) => cell.isChecked)
+    const winningColumn = findByColumn(
+      (column) => column.every((cell) => cell.isChecked),
+      board
     );
     if (winningColumn) {
       return [...acc, index];

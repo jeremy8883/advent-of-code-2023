@@ -1,5 +1,6 @@
 import R from "ramda";
 import { find2d, map2d, reduce2d } from "../utils/2d.js";
+import { sortAsc } from "../utils/array.js";
 
 export const parseInput = (str) =>
   str.split("\n").map((l) => l.split("").map(Number));
@@ -91,9 +92,5 @@ export const runChallengeB = (input) => {
     sizes.push(size);
   }
 
-  const diff = function (a, b) {
-    return a - b;
-  };
-
-  return R.product(R.takeLast(3, R.sort(diff, sizes)));
+  return R.product(R.takeLast(3, sortAsc(sizes)));
 };

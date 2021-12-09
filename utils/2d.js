@@ -1,5 +1,15 @@
 import R from "ramda";
 
+export const findByColumn = R.curry((predicate, grid) => {
+  for (let x = 0; x < grid[0].length; x++) {
+    const column = grid.map((row, y) => grid[y][x]);
+
+    if (predicate(column)) {
+      return column;
+    }
+  }
+});
+
 export const forEach2d = R.curry((cb, grid) => {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {

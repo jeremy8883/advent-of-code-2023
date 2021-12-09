@@ -1,4 +1,5 @@
 import R from "ramda";
+import { reduce2d } from "../utils/2d.js";
 
 const markPoint = (grid, pos) => {
   if (grid[pos.x] == undefined) {
@@ -73,9 +74,7 @@ function getGridSize(vectors) {
 export const getClouds = (vectors) => {
   const gridSize = getGridSize(vectors);
 
-  const grid = vectors.reduce(drawSmoke, []);
-
-  // console.log(grid);
+  const grid = vectors.reduce(drawSmoke, []);;
 
   return countGrid(grid, gridSize, (c) => c > 1);
 };
@@ -106,8 +105,6 @@ export const getCloudsWithDiagonals = (vectors) => {
   const gridSize = getGridSize(vectors);
 
   const grid = vectors.reduce(drawSmokeWithDiagonals, []);
-
-  // console.log(grid);
 
   return countGrid(grid, gridSize, (c) => c > 1);
 };

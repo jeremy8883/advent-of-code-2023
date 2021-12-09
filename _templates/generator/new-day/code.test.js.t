@@ -3,7 +3,9 @@ to: day<%=dayNumber%>/code.test.js
 ---
 import { runChallengeA, runChallengeB } from "./code.js";
 
-const mockInput = [];
+const mockInput = parseInput(
+  ``
+);
 
 describe("Day <%=dayNumber%>: runChallengeA", () => {
   it("gets the results", () => {
