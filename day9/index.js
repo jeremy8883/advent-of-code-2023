@@ -3,8 +3,8 @@ const { runChallengeA, runChallengeB } = require("./code");
 const { readInput } = require("../utils/readInput");
 
 const main = async () => {
-  const lines = (await readInput("day9/input.txt"));
-  const input = lines;
+  const lines = await readInput("day9/input.txt");
+  const input = lines.map((l) => l.split("").map(Number));
 
   const resultA = runChallengeA(input);
   console.log(JSON.stringify(resultA));
@@ -14,4 +14,3 @@ const main = async () => {
 };
 
 main();
-
