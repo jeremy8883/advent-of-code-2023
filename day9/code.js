@@ -1,5 +1,7 @@
 const R = require("ramda");
 
+const parseInput = (str) => str.split("\n").map((l) => l.split("").map(Number));
+
 const getHasLowerPoint = (input, x, y) => {
   const value = input[y][x];
 
@@ -107,4 +109,4 @@ const runChallengeB = (input) => {
   return R.product(R.takeLast(3, R.sort(diff, sizes)));
 };
 
-module.exports = { runChallengeA, runChallengeB };
+module.exports = { parseInput, runChallengeA, runChallengeB };
