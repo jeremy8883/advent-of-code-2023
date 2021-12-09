@@ -1,4 +1,5 @@
 const R = require("ramda");
+const { find2d, reduce2d, map2d } = require("../utils/2d");
 
 const parseInput = (str) => str.split("\n").map((l) => l.split("").map(Number));
 
@@ -24,34 +25,21 @@ const getHasLowerPoint = (input, x, y) => {
 };
 
 const runChallengeA = (input) => {
-  let count = 0;
-  for (let y = 0; y < input.length; y++) {
-    for (let x = 0; x < input[y].length; x++) {
-      const value = input[y][x];
+  return reduce2d(
+    (count, value, x, y) => {
       if (!getHasLowerPoint(input, x, y)) {
-        count += value + 1;
+        return count + value + 1;
       }
-    }
-  }
-  return count;
+      return count;
+    },
+    0,
+    input
+  );
 };
 
-const prepareInput = (input) => {
-  return input.map((col) => {
-    return col.map((number) => {
-      return number === 9;
-    });
-  });
-};
+const prepareInput = map2d(R.equals(9));
 
-const findBasin = (input) => {
-  for (let y = 0; y < input.length; y++) {
-    for (let x = 0; x < input[y].length; x++) {
-      if (!input[y][x]) return [x, y];
-    }
-  }
-  return undefined;
-};
+const findBasin = find2d((cell) => !cell);
 
 const fillGrid = (grid, x, y, count = 0) => {
   if (grid[y][x]) {
