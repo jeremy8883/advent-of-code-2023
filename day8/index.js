@@ -4,7 +4,7 @@ const { readInput } = require("../utils/readInput");
 
 const main = async () => {
   const lines = await readInput("day8/input.txt");
-  const input = lines.map((l) => {
+  const input = lines.split("\n").map((l) => {
     const [uniquePatterns, output] = l.split(" | ");
     return {
       uniquePatterns: uniquePatterns.split(" "),

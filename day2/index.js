@@ -4,6 +4,7 @@ const { readInput } = require("../utils/readInput");
 const main = async () => {
   const input = await readInput("day2/input.txt");
   const instructions = input
+    .split("\n")
     .map((line) => line.split(" "))
     .map(([command, amount]) => ({ command, amount: parseInt(amount) }));
 

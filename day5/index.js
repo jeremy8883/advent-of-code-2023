@@ -3,7 +3,7 @@ const { getClouds, getCloudsWithDiagonals } = require("./getClouds");
 const { readInput } = require("../utils/readInput");
 
 const main = async () => {
-  const lines = await readInput("day5/input.txt");
+  const lines = (await readInput("day5/input.txt")).split("\n");
   const vectors = lines.map((line) =>
     line.split(" -> ").map((value) => value.split(",").map((v) => parseInt(v)))
   );
