@@ -1,11 +1,20 @@
 import { runChallengeA, runChallengeB, parseInput } from "./code.js";
 
-const mockInput = parseInput(``);
+const mockInput = parseInput(`[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<{}[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]{}
+[[<[([]))<([[{}[[()]]]
+[{[{({}]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<{}))><([]([]()
+<{([([[(<>()){}]>(<<{{
+<{([{{}}[<[[[<>{}]]]>[]]`);
 
 describe("Day 10: runChallengeA", () => {
   it("gets the results", () => {
     const result = runChallengeA(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(26397);
   });
 });
 
