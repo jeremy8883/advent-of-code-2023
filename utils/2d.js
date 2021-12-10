@@ -39,3 +39,21 @@ export const find2d = R.curry((cb, grid) => {
   }
   return undefined;
 });
+
+export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
+  let acc = initial;
+  for (
+    let y = Math.max(subsection.y, 0);
+    y < Math.min(subsection.y + subsection.height, grid.length);
+    y++
+  ) {
+    for (
+      let x = Math.max(subsection.x, 0);
+      x < Math.min(subsection.x + subsection.width, grid[y].length);
+      x++
+    ) {
+      acc = cb(acc, grid[y][x], x, y);
+    }
+  }
+  return acc;
+});
