@@ -1,4 +1,5 @@
 import R from "ramda";
+import { sortAsc } from "../utils/array.js";
 
 export const parseInput = (str) => str.split("\n");
 
@@ -16,7 +17,7 @@ const matchingPairs = {
   "<": ">",
 };
 
-const openingChars = new Set(["(", "[", "{", "<"]);
+const openingChars = new Set(Object.keys(matchingPairs));
 
 const getCorruptionScore = (line) => {
   const chars = line.split("");
@@ -41,7 +42,34 @@ export const runChallengeA = (input) => {
   return R.sum(input.map(getCorruptionScore));
 };
 
+const acScores = {
+  ")": 1,
+  "]": 2,
+  "}": 3,
+  ">": 4,
+};
+
+const getAcScore = (line) => {
+  const chars = line.split("");
+
+  const stack = chars.reduce((stack, c) => {
+    if (openingChars.has(c)) {
+      stack.push(c);
+    } else {
+      stack.pop();
+    }
+    return stack;
+  }, []);
+
+  return stack
+    .reverse()
+    .map((openingChar) => matchingPairs[openingChar])
+    .reduce((acc, closingChar) => acc * 5 + acScores[closingChar], 0);
+};
+
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  const scores = input
+    .filter((line) => getCorruptionScore(line) === 0)
+    .map(getAcScore);
+  return sortAsc(scores)[parseInt(scores.length / 2)];
 };
