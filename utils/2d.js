@@ -40,8 +40,7 @@ export const find2d = R.curry((cb, grid) => {
   return undefined;
 });
 
-export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
-  let acc = initial;
+export const forEach2dSubsection = R.curry((cb, subsection, grid) => {
   for (
     let y = Math.max(subsection.y, 0);
     y < Math.min(subsection.y + subsection.height, grid.length);
@@ -52,8 +51,37 @@ export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
       x < Math.min(subsection.x + subsection.width, grid[y].length);
       x++
     ) {
-      acc = cb(acc, grid[y][x], x, y);
+      cb(grid[y][x], x, y);
     }
   }
+});
+
+export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
+  let acc = initial;
+  forEach2dSubsection(
+    (item, x, y) => {
+      acc = cb(acc, item, x, y);
+    },
+    subsection,
+    grid
+  );
   return acc;
+});
+
+export const find2dSubsection = R.curry((cb, subsection, grid) => {
+  for (
+    let y = Math.max(subsection.y, 0);
+    y < Math.min(subsection.y + subsection.height, grid.length);
+    y++
+  ) {
+    for (
+      let x = Math.max(subsection.x, 0);
+      x < Math.min(subsection.x + subsection.width, grid[y].length);
+      x++
+    ) {
+      if (cb(grid[y][x], x, y)) {
+        return grid[y][x];
+      }
+    }
+  }
 });

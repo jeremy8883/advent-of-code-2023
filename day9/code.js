@@ -1,36 +1,33 @@
 import R from "ramda";
-import { find2d, map2d, reduce2d, reduce2dSubsection } from "../utils/2d.js";
+import {
+  find2d,
+  find2dSubsection,
+  map2d,
+  reduce2d,
+  reduce2dSubsection,
+} from "../utils/2d.js";
 import { sortAsc } from "../utils/array.js";
 import { newRect } from "../utils/geometry.js";
 
 export const parseInput = (str) =>
   str.split("\n").map((l) => l.split("").map(Number));
 
-const getHasLowerPoint = (input, x, y) => {
+const getHasLowerNeighbour = (input, x, y) => {
   const value = input[y][x];
 
-  for (
-    let y2 = Math.max(y - 1, 0);
-    y2 <= Math.min(y + 1, input.length - 1);
-    y2++
-  ) {
-    for (
-      let x2 = Math.max(x - 1, 0);
-      x2 <= Math.min(x + 1, input[y].length - 1);
-      x2++
-    ) {
-      if (x2 === x && y2 === y) continue;
-
-      if (input[y2][x2] < value) return true;
-    }
-  }
-  return false;
+  return (
+    find2dSubsection(
+      (v, i, j) => v < value,
+      newRect(x - 1, y - 1, 3, 3),
+      input
+    ) != null
+  );
 };
 
 export const runChallengeA = (input) => {
   return reduce2d(
     (count, value, x, y) => {
-      if (!getHasLowerPoint(input, x, y)) {
+      if (!getHasLowerNeighbour(input, x, y)) {
         return count + value + 1;
       }
       return count;
@@ -54,6 +51,20 @@ const isHvNeighbour = (x, y, i, j) => {
   );
 };
 
+const reduce2dHvNeighbour = (cb, initalValue, x, y, grid) =>
+  reduce2dSubsection(
+    (acc, nextValue, i, j) => {
+      if (!isHvNeighbour(x, y, i, j)) {
+        return acc;
+      }
+
+      return cb(acc, nextValue, i, j);
+    },
+    initalValue,
+    newRect(x - 1, y - 1, 3, 3),
+    grid
+  );
+
 const fillGrid = (grid, x, y, count = 0) => {
   if (grid[y][x]) {
     return count;
@@ -61,16 +72,11 @@ const fillGrid = (grid, x, y, count = 0) => {
 
   grid[y][x] = true;
 
-  return reduce2dSubsection(
-    (acc, isFilled, i, j) => {
-      if (!isHvNeighbour(x, y, i, j)) {
-        return acc;
-      }
-
-      return fillGrid(grid, i, j, acc);
-    },
+  return reduce2dHvNeighbour(
+    (acc, isFilled, i, j) => fillGrid(grid, i, j, acc),
     count + 1,
-    newRect(x - 1, y - 1, 3, 3),
+    x,
+    y,
     grid
   );
 };
