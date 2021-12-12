@@ -56,6 +56,18 @@ export const forEach2dSubsection = R.curry((cb, subsection, grid) => {
   }
 });
 
+export const map2dSubsection = R.curry((cb, subsection, grid) => {
+  let cloned = R.clone(grid);
+  forEach2dSubsection(
+    (item, x, y) => {
+      cloned[y][x] = cb(item, x, y);
+    },
+    subsection,
+    cloned
+  );
+  return cloned;
+});
+
 export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
   let acc = initial;
   forEach2dSubsection(
