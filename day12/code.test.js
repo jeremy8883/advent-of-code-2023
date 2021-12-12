@@ -1,5 +1,15 @@
 import { runChallengeA, runChallengeB, parseInput } from "./code.js";
 
+const mockInput0 = parseInput(
+  `start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end`
+);
+
 const mockInput1 = parseInput(
   `dc-end
 HN-start
@@ -48,7 +58,17 @@ describe("Day 12: runChallengeA", () => {
 
 describe("Day 12: runChallengeB", () => {
   it("gets the results", () => {
+    const result = runChallengeB(mockInput0);
+    expect(result).toEqual(36);
+  });
+
+  it("gets the results", () => {
     const result = runChallengeB(mockInput1);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(103);
+  });
+
+  it("gets the result for a larger set", () => {
+    const result = runChallengeB(mockInput2);
+    expect(result).toEqual(3509);
   });
 });
