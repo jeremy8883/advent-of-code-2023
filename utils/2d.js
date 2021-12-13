@@ -1,4 +1,5 @@
 import R from "ramda";
+import { newRectByPoints } from "./geometry.js";
 
 export const findByColumn = R.curry((predicate, grid) => {
   for (let x = 0; x < grid[0].length; x++) {
@@ -97,3 +98,31 @@ export const find2dSubsection = R.curry((cb, subsection, grid) => {
     }
   }
 });
+
+export const gridToString = (grid) => {
+  return grid.map((row) => row.join("")).join("\n");
+};
+
+export const newGrid = R.curry((defaultValue, { width, height }) =>
+  R.range(0, height).map(() => R.range(0, width).map(() => defaultValue))
+);
+
+export const getBounds = (points) =>
+  newRectByPoints(
+    R.apply(
+      Math.min,
+      points.map((p) => p.x)
+    ) + 1,
+    R.apply(
+      Math.min,
+      points.map((p) => p.y)
+    ) + 1,
+    R.apply(
+      Math.max,
+      points.map((p) => p.x)
+    ) + 1,
+    R.apply(
+      Math.max,
+      points.map((p) => p.y)
+    ) + 1
+  );
