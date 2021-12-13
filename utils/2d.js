@@ -112,11 +112,11 @@ export const getBounds = (points) =>
     R.apply(
       Math.min,
       points.map((p) => p.x)
-    ) + 1,
+    ),
     R.apply(
       Math.min,
       points.map((p) => p.y)
-    ) + 1,
+    ),
     R.apply(
       Math.max,
       points.map((p) => p.x)
