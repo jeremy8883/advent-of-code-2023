@@ -1,4 +1,5 @@
 import R from "ramda";
+import { newRectByPoints } from "../utils/geometry.js";
 
 export const parseInput = (str) => {
   const lines = str.split("\n");
@@ -41,17 +42,59 @@ const makeFold = ({ axis, value }, point) => {
   }
 };
 
-export const runChallengeA = (input) => {
+const doFold = (points, fold) => {
   return R.pipe(
     R.map((point) => {
-      return makeFold(input.folds[0], point);
+      return makeFold(fold, point);
     }),
-    R.uniqBy((point) => `${point.x},${point.y}`),
-    R.prop("length")
-  )(input.points);
+    R.uniqBy((point) => `${point.x},${point.y}`)
+  )(points);
+};
+
+export const runChallengeA = (input) => {
+  return doFold(input.points, input.folds[0]).length;
+};
+
+const getGridSize = (points) =>
+  newRectByPoints(
+    R.apply(
+      Math.min,
+      points.map((p) => p.x)
+    ) + 1,
+    R.apply(
+      Math.min,
+      points.map((p) => p.y)
+    ) + 1,
+    R.apply(
+      Math.max,
+      points.map((p) => p.x)
+    ) + 1,
+    R.apply(
+      Math.max,
+      points.map((p) => p.y)
+    ) + 1
+  );
+
+const newGrid = (width, height) =>
+  R.range(0, height).map(() => R.range(0, width).map(() => "."));
+
+const renderPoints = (points) => {
+  const size = getGridSize(points);
+  const grid = newGrid(size.width, size.height);
+  return points.reduce((grid, point) => {
+    grid[point.y][point.x] = "#";
+    return grid;
+  }, grid);
+};
+
+const gridToString = (grid) => {
+  return grid.map((row) => row.join("")).join("\n");
 };
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  const points = input.folds.reduce((points, f) => {
+    return doFold(points, f);
+  }, input.points);
+  const grid = renderPoints(points);
+  return gridToString(grid);
 };
