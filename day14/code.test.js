@@ -30,7 +30,7 @@ describe("Day 14: runChallengeA", () => {
 
 describe("Day 14: runChallengeB", () => {
   it("gets the results", () => {
-    const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    const result = runChallengeB(mockInput, 40);
+    expect(result).toEqual(2188189693529);
   });
 });

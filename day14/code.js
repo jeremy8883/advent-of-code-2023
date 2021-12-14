@@ -4,7 +4,9 @@ export const parseInput = (str) => {
   const lines = str.split("\n");
   return {
     template: lines[0],
-    insertions: R.drop(2, lines).map((l) => l.split(" -> ")),
+    insertions: Object.fromEntries(
+      R.drop(2, lines).map((l) => l.split(" -> "))
+    ),
   };
 };
 
@@ -12,14 +14,14 @@ const runInsertions = (insertions, template) => {
   return R.range(0, template.length - 1)
     .reverse()
     .reduce((templ, index) => {
-      const toInsert = insertions.find(([from, to]) => {
-        return from === `${template[index]}${template[index + 1]}`;
-      });
+      const toInsert = insertions[`${template[index]}${template[index + 1]}`];
       if (!toInsert) {
-        throw new Error(`Could not find ${templ[index] + templ[index + 1]}`);
+        throw new Error(
+          `Could not find ${template[index] + template[index + 1]}`
+        );
       }
 
-      return templ.slice(0, index + 1) + toInsert[1] + templ.slice(index + 1);
+      return templ.slice(0, index + 1) + toInsert + templ.slice(index + 1);
     }, template);
 };
 
@@ -41,7 +43,6 @@ export const runChallengeA = (input, stepCount) => {
   return largest[1] - smallest[1];
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+export const runChallengeB = (input, stepCount) => {
+  // return runChallengeA(input, stepCount);
 };

@@ -9,7 +9,7 @@ const main = async () => {
   const resultA = runChallengeA(input, 10);
   console.log(JSON.stringify(resultA));
 
-  const resultB = runChallengeB(input);
+  const resultB = runChallengeB(input, 40);
   console.log(JSON.stringify(resultB));
 };
 
