@@ -69,6 +69,23 @@ export const map2dSubsection = R.curry((cb, subsection, grid) => {
   return cloned;
 });
 
+export const getHvNeighbours = R.curry(({ x, y }, grid) => {
+  const result = [];
+  if (y > 0) {
+    result.push({ y: y - 1, x });
+  }
+  if (x > 0) {
+    result.push({ y, x: x - 1 });
+  }
+  if (x < grid[y].length - 1) {
+    result.push({ y, x: x + 1 });
+  }
+  if (y < grid.length - 1) {
+    result.push({ y: y + 1, x });
+  }
+  return result;
+});
+
 export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
   let acc = initial;
   forEach2dSubsection(
