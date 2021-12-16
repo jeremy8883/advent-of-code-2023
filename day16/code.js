@@ -31,8 +31,8 @@ const decodePacket = (bin, iterator) => {
 
   const startIndex = getCurrentIndex();
   const version = parseInt(takeNext(3), 2);
-  const typeId = takeNext(3);
-  const isLiteralValue = typeId === "100";
+  const typeId = parseInt(takeNext(3), 2);
+  const isLiteralValue = typeId === 4;
 
   if (isLiteralValue) {
     let literalValue = "";
@@ -46,6 +46,7 @@ const decodePacket = (bin, iterator) => {
     return {
       version,
       type: "literal",
+      typeId,
       startIndex,
       endIndex: getCurrentIndex(),
       value: parseInt(literalValue, 2),
@@ -72,6 +73,7 @@ const decodePacket = (bin, iterator) => {
       return {
         version,
         type: "operator",
+        typeId,
         startIndex,
         endIndex: getCurrentIndex(),
         subPackets,
@@ -86,6 +88,7 @@ const decodePacket = (bin, iterator) => {
       return {
         version,
         type: "operator",
+        typeId,
         startIndex,
         endIndex: getCurrentIndex(),
         subPackets,
@@ -106,13 +109,37 @@ const sumVersions = (packet) => {
   }
 };
 
-export const runChallengeA = (hex) => {
-  const bin = hexToBin(hex);
+export const runChallengeA = R.pipe(hexToBin, decodePacket, sumVersions);
 
-  return R.pipe(decodePacket, sumVersions)(bin);
+const getOperation = (typeId) => {
+  switch (typeId) {
+    case 0:
+      return R.sum;
+    case 1:
+      return R.product;
+    case 2:
+      return (vals) => Math.min(...vals);
+    case 3:
+      return (vals) => Math.max(...vals);
+    case 5:
+      return ([val1, val2]) => (val1 > val2 ? 1 : 0);
+    case 6:
+      return ([val1, val2]) => (val1 < val2 ? 1 : 0);
+    case 7:
+      return ([val1, val2]) => (val1 === val2 ? 1 : 0);
+    default:
+      throw new Error(`Unknown typeId: ${typeId}`);
+  }
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const sumValues = (packet) => {
+  if (packet.type === "literal") {
+    return packet.value;
+  } else {
+    const fn = getOperation(packet.typeId);
+
+    return R.pipe(R.map(sumValues), fn)(packet.subPackets);
+  }
 };
+
+export const runChallengeB = R.pipe(hexToBin, decodePacket, sumValues);

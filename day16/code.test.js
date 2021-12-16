@@ -15,7 +15,13 @@ describe("Day 16: runChallengeA", () => {
 
 describe("Day 16: runChallengeB", () => {
   it("gets the results", () => {
-    const result = runChallengeB("");
-    expect(result).toEqual("TODO");
+    expect(runChallengeB(parseInput(`C200B40A82`))).toEqual(3);
+    expect(runChallengeB(parseInput(`04005AC33890`))).toEqual(54);
+    expect(runChallengeB(parseInput(`880086C3E88112`))).toEqual(7);
+    expect(runChallengeB(parseInput(`CE00C43D881120`))).toEqual(9);
+    expect(runChallengeB(parseInput(`D8005AC2A8F0`))).toEqual(1);
+    expect(runChallengeB(parseInput(`F600BC2D8F`))).toEqual(0);
+    expect(runChallengeB(parseInput(`9C005AC2F8F0`))).toEqual(0);
+    expect(runChallengeB(parseInput(`9C0141080250320F1802104A08`))).toEqual(1);
   });
 });
