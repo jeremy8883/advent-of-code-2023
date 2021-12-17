@@ -2,6 +2,7 @@ import R from "ramda";
 import {
   addPoints,
   getX2,
+  getY2,
   isInside,
   newPoint,
   newRect,
@@ -77,8 +78,6 @@ export const runChallengeA = (targetArea) => {
       const attempt = getIsOnTarget(newPoint(x, y), targetArea);
       const { isOnTarget, reason, peakY } = attempt;
 
-      if (isOnTarget) {
-      }
       if (isOnTarget && (!bestAttempt || peakY > bestAttempt.peakY)) {
         bestAttempt = attempt;
       }
@@ -88,7 +87,20 @@ export const runChallengeA = (targetArea) => {
   return bestAttempt?.peakY;
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+export const runChallengeB = (targetArea) => {
+  let successCount = 0;
+
+  // This is awful, I need to reference my year 10 math textbook
+  for (let y = targetArea.y; y < 500; y++) {
+    for (let x = Math.floor(targetArea.x * 0.1); x < getX2(targetArea); x++) {
+      const attempt = getIsOnTarget(newPoint(x, y), targetArea);
+      const { isOnTarget } = attempt;
+
+      if (isOnTarget) {
+        successCount++;
+      }
+    }
+  }
+
+  return successCount;
 };
