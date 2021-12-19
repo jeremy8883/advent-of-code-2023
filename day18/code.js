@@ -120,6 +120,13 @@ export const runChallengeA = (input) => {
 };
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  let largestMag = 0;
+  for (let i = 0; i < input.length; i++) {
+    for (let j = 0; j < input.length; j++) {
+      if (i === j) continue;
+      const result = _snailfishAdd(input[i], input[j]);
+      largestMag = Math.max(_getMagnitude(result), largestMag);
+    }
+  }
+  return largestMag;
 };
