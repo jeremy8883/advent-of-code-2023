@@ -41,19 +41,20 @@ export const enhanceImage = ({ enhancement, inputImage }, oobPixel) => {
   )(enhancedSize);
 };
 
-export const runChallengeA = ({ enhancement, inputImage }) => {
-  let oobPixel = ".";
-  return R.pipe(
-    R.reduce((acc) => {
-      const result = enhanceImage({ enhancement, inputImage: acc }, oobPixel);
-      oobPixel = oobPixel === "." ? enhancement[0] : enhancement[511];
-      return result;
-    }, inputImage),
-    reduce2d((acc, pixel) => acc + (pixel === "#" ? 1 : 0), 0)
-  )(R.range(0, 2));
-};
+const runChallenge =
+  (times) =>
+  ({ enhancement, inputImage }) => {
+    let oobPixel = ".";
+    return R.pipe(
+      R.reduce((acc) => {
+        const result = enhanceImage({ enhancement, inputImage: acc }, oobPixel);
+        oobPixel = oobPixel === "." ? enhancement[0] : enhancement[511];
+        return result;
+      }, inputImage),
+      reduce2d((acc, pixel) => acc + (pixel === "#" ? 1 : 0), 0)
+    )(R.range(0, times));
+  };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
-};
+export const runChallengeA = runChallenge(2);
+
+export const runChallengeB = runChallenge(50);
