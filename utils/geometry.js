@@ -29,3 +29,8 @@ export const isInside = (point, area) =>
   point.y >= area.y &&
   point.x < getX2(area) &&
   point.y < getY2(area);
+
+export const addSize = (sizeA, sizeB) => ({
+  width: sizeA.width + sizeB.width,
+  height: sizeA.height + sizeB.height,
+});

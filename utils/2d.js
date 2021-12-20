@@ -1,5 +1,5 @@
 import R from "ramda";
-import { newRectByPoints } from "./geometry.js";
+import { getX2, getY2, newRectByPoints, newSize } from "./geometry.js";
 
 export const findByColumn = R.curry((predicate, grid) => {
   for (let x = 0; x < grid[0].length; x++) {
@@ -120,6 +120,10 @@ export const gridToString = (grid) => {
   return grid.map((row) => row.join("")).join("\n");
 };
 
+export const logGrid = (g) => {
+  console.log(gridToString(g));
+};
+
 export const newGrid = R.curry((defaultValue, { width, height }) =>
   R.range(0, height).map(() => R.range(0, width).map(() => defaultValue))
 );
@@ -143,3 +147,15 @@ export const getBounds = (points) =>
       points.map((p) => p.y)
     ) + 1
   );
+
+export const getSize = (grid) => newSize(grid[0].length, grid.length);
+
+export const reduceRect = R.curry((cb, initial, rect) => {
+  let acc = initial;
+  for (let y = rect.y; y < getY2(rect); y++) {
+    for (let x = rect.x; x < getX2(rect); x++) {
+      acc = cb(acc, x, y);
+    }
+  }
+  return acc;
+});
