@@ -9,7 +9,7 @@ export const parseInput = (str) =>
     .map(R.last)
     .map(Number);
 
-const createDie = () => {
+const createDeterministicDie = () => {
   let prevValue = 99;
 
   return {
@@ -20,8 +20,11 @@ const createDie = () => {
   };
 };
 
-const playTurn = (die, player) => {
-  const result = die.roll() + die.roll() + die.roll();
+const playTurn = (roll, player) => {
+  const roll1 = roll();
+  const roll2 = roll();
+  const roll3 = roll();
+  const result = roll1 + roll2 + roll3;
   const newPosition = ((player.position + result - 1) % boardLength) + 1;
 
   return {
@@ -38,12 +41,12 @@ const initPlayers = (startPositions) =>
   }));
 
 export const runChallengeA = (startPositions) => {
-  const die = createDie();
+  const die = createDeterministicDie();
   const players = initPlayers(startPositions);
   let rollCount = 0;
   while (true) {
     for (let i = 0; i < players.length; i++) {
-      players[i] = playTurn(die, players[i]);
+      players[i] = playTurn(die.roll, players[i]);
       rollCount += 3;
       if (players[i].score >= 1000) {
         return players[i === 0 ? 1 : 0].score * rollCount;
@@ -52,7 +55,55 @@ export const runChallengeA = (startPositions) => {
   }
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const addWins = (a, b) => [a[0] + b[0], a[1] + b[1]];
+
+const possibleRolls = R.range(0, 3)
+  .map((i) =>
+    R.range(0, 3).map((j) => R.range(0, 3).map((k) => [i + 1, j + 1, k + 1]))
+  )
+  .flat()
+  .flat();
+
+const createDiceByList = (values) => {
+  let lastIndex = values.length - 1;
+  return () => {
+    lastIndex = (lastIndex + 1) % values.length;
+    return values[lastIndex];
+  };
+};
+
+const winningScore = 21;
+
+const countWins = (players, cache = {}) => {
+  const cacheKey = players.map((p) => `${p.score},${p.position}`).join("-");
+  if (cache[cacheKey]) {
+    return cache[cacheKey];
+  }
+
+  let theseWins = [0, 0];
+  for (const quantumRoll1 of possibleRolls) {
+    const player1 = playTurn(createDiceByList(quantumRoll1), players[0]);
+    if (player1.score >= winningScore) {
+      theseWins[0] += 1;
+      continue;
+    }
+    for (const quantumRoll2 of possibleRolls) {
+      const player2 = playTurn(createDiceByList(quantumRoll2), players[1]);
+      if (player2.score >= winningScore) {
+        theseWins[1] += 1;
+      } else {
+        theseWins = addWins(theseWins, countWins([player1, player2], cache));
+      }
+    }
+  }
+  cache[cacheKey] = theseWins;
+
+  return theseWins;
+};
+
+export const runChallengeB = (startPositions) => {
+  const players = initPlayers(startPositions);
+  const result = countWins(players);
+
+  return Math.max(...result);
 };

@@ -13,7 +13,7 @@ describe("Day 21: runChallengeA", () => {
 });
 
 describe("Day 21: runChallengeB", () => {
-  it("gets the results", () => {
+  it.only("gets the results", () => {
     const result = runChallengeB(mockInput);
     expect(result).toEqual(444356092776315);
   });
