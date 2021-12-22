@@ -1,4 +1,12 @@
-import { runChallengeA, runChallengeB, parseInput } from "./code.js";
+import {
+  runChallengeA,
+  runChallengeB,
+  parseInput,
+  _getIntersects,
+  _getFaces,
+  _splitCuboidsByAxis,
+  _splitCuboids,
+} from "./code.js";
 
 const mockInput1 = parseInput(
   `on x=-20..26,y=-36..17,z=-47..7
@@ -88,18 +96,161 @@ on x=-53470..21291,y=-120233..-33476,z=-44150..38147
 off x=-93533..-4276,y=-16170..68771,z=-104985..-24507`
 );
 
-describe("Day 22: runChallengeA", () => {
-  it.only("gets the results", () => {
+xdescribe("Day 22: runChallengeA", () => {
+  it("gets the results", () => {
     expect(runChallengeA(mockInput1)).toEqual(590784);
 
     expect(runChallengeA(mockInput2)).toEqual(474140);
   });
 });
 
+describe("_getIntersects", () => {
+  it("returns true if the intersects", () => {
+    const result = _getIntersects(
+      { x: [0, 10], y: [0, 10], z: [0, 10] },
+      { x: [5, 15], y: [0, 10], z: [0, 10] }
+    );
+
+    expect(result).toEqual(true);
+  });
+
+  it("returns false otherwise", () => {
+    const result = _getIntersects(
+      { x: [15, 30], y: [0, 10], z: [0, 10] },
+      { x: [5, 15], y: [0, 10], z: [0, 10] }
+    );
+
+    expect(result).toEqual(false);
+  });
+});
+
+describe("_getFaces", () => {
+  it("returns all faces of a cuboid", () => {
+    const result = _getFaces({ x: [0, 10], y: [1, 11], z: [2, 12] });
+    expect(result).toEqual([
+      {
+        axis: "x",
+        value: 0,
+      },
+      {
+        axis: "x",
+        value: 10,
+      },
+      {
+        axis: "y",
+        value: 1,
+      },
+      {
+        axis: "y",
+        value: 11,
+      },
+      {
+        axis: "z",
+        value: 2,
+      },
+      {
+        axis: "z",
+        value: 12,
+      },
+    ]);
+  });
+});
+
+describe("_splitCuboidsByAxis", () => {
+  it("splits the cuboids by a given axis and value", () => {
+    const result = _splitCuboidsByAxis(
+      [{ x: [0, 10], y: [0, 10], z: [0, 10] }],
+      { axis: "x", value: 2 }
+    );
+    expect(result).toEqual([
+      { x: [0, 2], y: [0, 10], z: [0, 10] },
+      { x: [2, 10], y: [0, 10], z: [0, 10] },
+    ]);
+  });
+
+  it("does nothing if the value doesn't intersect", () => {
+    const result = _splitCuboidsByAxis(
+      [{ x: [0, 10], y: [0, 10], z: [0, 10] }],
+      { axis: "x", value: 10 }
+    );
+    expect(result).toEqual([{ x: [0, 10], y: [0, 10], z: [0, 10] }]);
+  });
+
+  it("works for multiple cuboids", () => {
+    const result = _splitCuboidsByAxis(
+      [
+        { x: [0, 10], y: [0, 10], z: [0, 10] },
+        { x: [-10, 5], y: [100, 110], z: [110, 110] },
+      ],
+      { axis: "x", value: 2 }
+    );
+    expect(result).toEqual([
+      { x: [0, 2], y: [0, 10], z: [0, 10] },
+      { x: [2, 10], y: [0, 10], z: [0, 10] },
+      { x: [-10, 2], y: [100, 110], z: [110, 110] },
+      { x: [2, 5], y: [100, 110], z: [110, 110] },
+    ]);
+  });
+});
+
+describe("_splitCuboids", () => {
+  it("splits the cuboids by a given axis and value", () => {
+    const result = _splitCuboids([{ x: [0, 10], y: [0, 10], z: [0, 10] }], {
+      x: [2, 15],
+      y: [0, 10],
+      z: [0, 10],
+    });
+    expect(result).toEqual([
+      { x: [0, 2], y: [0, 10], z: [0, 10] },
+      { x: [2, 10], y: [0, 10], z: [0, 10] },
+    ]);
+  });
+
+  it("does nothing if the value doesn't intersect", () => {
+    const result = _splitCuboids([{ x: [0, 10], y: [0, 10], z: [0, 10] }], {
+      x: [10, 15],
+      y: [0, 10],
+      z: [0, 10],
+    });
+    expect(result).toEqual([{ x: [0, 10], y: [0, 10], z: [0, 10] }]);
+  });
+
+  it("works for multiple cuboids", () => {
+    const result = _splitCuboids(
+      [
+        { x: [0, 10], y: [0, 10], z: [0, 10] },
+        { x: [-10, 5], y: [100, 110], z: [110, 110] },
+      ],
+      {
+        x: [2, 15],
+        y: [0, 10],
+        z: [0, 10],
+      }
+    );
+    expect(result).toEqual([
+      { x: [0, 2], y: [0, 10], z: [0, 10] },
+      { x: [2, 10], y: [0, 10], z: [0, 10] },
+      { x: [-10, 5], y: [100, 110], z: [110, 110] },
+    ]);
+  });
+
+  it("works for multiple axis", () => {
+    const result = _splitCuboids([{ x: [0, 10], y: [0, 10], z: [0, 10] }], {
+      x: [2, 15],
+      y: [4, 10],
+      z: [0, 10],
+    });
+    expect(result).toEqual([
+      { x: [0, 2], y: [0, 4], z: [0, 10] },
+      { x: [0, 2], y: [4, 10], z: [0, 10] },
+      { x: [2, 10], y: [0, 4], z: [0, 10] },
+      { x: [2, 10], y: [4, 10], z: [0, 10] },
+    ]);
+  });
+});
+
 describe("Day 22: runChallengeB", () => {
   it("gets the results", () => {
-    expect(runChallengeB(mockInput1)).toEqual(123);
-
-    // expect(runChallengeB(mockInput2)).toEqual(2758514936282235);
+    expect(runChallengeB(mockInput2)).toEqual(2758514936282235);
   });
 });

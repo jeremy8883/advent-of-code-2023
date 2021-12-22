@@ -90,21 +90,87 @@ export const runChallengeA = (instructions) => {
   )(instructions);
 };
 
-const getIntersections = () => {};
+const _getIntersectsByAxis = (aRange, bRange) =>
+  aRange[1] > bRange[0] && aRange[0] < bRange[1];
+
+export const _getIntersects = (cuboidA, cuboidB) => {
+  return (
+    _getIntersectsByAxis(cuboidB.x, cuboidA.x) &&
+    _getIntersectsByAxis(cuboidB.y, cuboidA.y) &&
+    _getIntersectsByAxis(cuboidB.z, cuboidA.z)
+  );
+};
+
+const getIsSplitable = (range, value) => value > range[0] && value < range[1];
+
+export const _getFaces = (cuboid) => {
+  return [
+    ["x", 0],
+    ["x", 1],
+    ["y", 0],
+    ["y", 1],
+    ["z", 0],
+    ["z", 1],
+  ].map(([axis, rangeIndex]) => {
+    const value = cuboid[axis][rangeIndex];
+    return { axis, value };
+  });
+};
+
+export const _splitCuboidsByAxis = (cuboids, { axis, value }) => {
+  return cuboids.flatMap((cuboid) => {
+    if (!getIsSplitable(cuboid[axis], value)) {
+      return [cuboid];
+    }
+    return [
+      {
+        ...cuboid,
+        [axis]: [cuboid[axis][0], value],
+      },
+      {
+        ...cuboid,
+        [axis]: [value, cuboid[axis][1]],
+      },
+    ];
+  });
+};
+
+export const _splitCuboids = (existingCuboids, cuboid) => {
+  return existingCuboids.flatMap((existingCuboid) => {
+    if (!_getIntersects(cuboid, existingCuboid)) {
+      return [existingCuboid];
+    }
+
+    return _getFaces(cuboid).reduce(
+      (acc, intersection) => {
+        return _splitCuboidsByAxis(acc, intersection);
+      },
+      [existingCuboid]
+    );
+  });
+};
 
 const getOnBoxes = (instructions) => {
   return instructions.reduce((acc, { isOn, cuboid }) => {
-    const intersections = getIntersections(acc, cuboid);
-    if (!intersections.length(acc, cuboid)) {
-      return isOn ? [...acc, cuboid] : acc;
-    }
+    const splitCuboids = _splitCuboids(acc, cuboid).filter(
+      (ec) => !_getIntersects(ec, cuboid)
+    );
 
-    if (isOn) {
-    } else {
-    }
+    return isOn ? [...splitCuboids, cuboid] : splitCuboids;
   }, []);
 };
 
+const getCubeCount = (cuboids) => {
+  return cuboids.reduce(
+    (acc, cuboid) =>
+      acc +
+      (cuboid.x[1] - cuboid.x[0]) *
+        (cuboid.y[1] - cuboid.y[0]) *
+        (cuboid.z[1] - cuboid.z[0]),
+    0
+  );
+};
+
 export const runChallengeB = (instructions) => {
-  return R.pipe(getOnBoxes)(instructions);
+  return R.pipe(getOnBoxes, getCubeCount)(instructions);
 };
