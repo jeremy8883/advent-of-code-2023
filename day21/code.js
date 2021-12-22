@@ -74,12 +74,7 @@ const createDiceByList = (values) => {
 
 const winningScore = 21;
 
-const countWins = (players, cache = {}) => {
-  const cacheKey = players.map((p) => `${p.score},${p.position}`).join("-");
-  if (cache[cacheKey]) {
-    return cache[cacheKey];
-  }
-
+const countWinsRaw = (players) => {
   let theseWins = [0, 0];
   for (const quantumRoll1 of possibleRolls) {
     const player1 = playTurn(createDiceByList(quantumRoll1), players[0]);
@@ -92,14 +87,18 @@ const countWins = (players, cache = {}) => {
       if (player2.score >= winningScore) {
         theseWins[1] += 1;
       } else {
-        theseWins = addWins(theseWins, countWins([player1, player2], cache));
+        theseWins = addWins(theseWins, countWins([player1, player2]));
       }
     }
   }
-  cache[cacheKey] = theseWins;
 
   return theseWins;
 };
+
+const countWins = R.memoizeWith(
+  (players) => players.map((p) => `${p.score},${p.position}`).join("-"),
+  countWinsRaw
+);
 
 export const runChallengeB = (startPositions) => {
   const players = initPlayers(startPositions);
