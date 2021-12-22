@@ -10,16 +10,16 @@ export const parseInput = (str) => {
 
     return {
       isOn: func === "on",
-      ranges: R.fromPairs(instructionsArr),
+      cuboid: R.fromPairs(instructionsArr),
     };
   });
 };
 
-const getPossibleCubes = (ranges) =>
-  R.range(ranges.x[0], ranges.x[1] + 1)
+const getPossibleCubes = (cuboid) =>
+  R.range(cuboid.x[0], cuboid.x[1] + 1)
     .map((x) =>
-      R.range(ranges.y[0], ranges.y[1] + 1).map((y) =>
-        R.range(ranges.z[0], ranges.z[1] + 1).map((z) => [x, y, z])
+      R.range(cuboid.y[0], cuboid.y[1] + 1).map((y) =>
+        R.range(cuboid.z[0], cuboid.z[1] + 1).map((z) => [x, y, z])
       )
     )
     .flat()
@@ -35,8 +35,8 @@ function getIsCompletelyOutsideBounds(range, bounds) {
 const limitToBounds = (bounds) => (instructions) => {
   return instructions
     .map((instruction) => {
-      const { ranges } = instruction;
-      const { x, y, z } = ranges;
+      const { cuboid } = instruction;
+      const { x, y, z } = cuboid;
 
       if (
         getIsCompletelyOutsideBounds(x, bounds) ||
@@ -48,18 +48,18 @@ const limitToBounds = (bounds) => (instructions) => {
 
       return {
         ...instruction,
-        ranges: {
+        cuboid: {
           x: [
-            R.clamp(bounds[0], bounds[1], ranges.x[0]),
-            R.clamp(bounds[0], bounds[1], ranges.x[1]),
+            R.clamp(bounds[0], bounds[1], cuboid.x[0]),
+            R.clamp(bounds[0], bounds[1], cuboid.x[1]),
           ],
           y: [
-            R.clamp(bounds[0], bounds[1], ranges.y[0]),
-            R.clamp(bounds[0], bounds[1], ranges.y[1]),
+            R.clamp(bounds[0], bounds[1], cuboid.y[0]),
+            R.clamp(bounds[0], bounds[1], cuboid.y[1]),
           ],
           z: [
-            R.clamp(bounds[0], bounds[1], ranges.z[0]),
-            R.clamp(bounds[0], bounds[1], ranges.z[1]),
+            R.clamp(bounds[0], bounds[1], cuboid.z[0]),
+            R.clamp(bounds[0], bounds[1], cuboid.z[1]),
           ],
         },
       };
@@ -78,7 +78,7 @@ export const runChallengeA = (instructions) => {
   return R.pipe(
     limitToBounds([-50, 50]),
     R.reduce((acc, instruction) => {
-      getPossibleCubes(instruction.ranges).forEach(([x, y, z]) => {
+      getPossibleCubes(instruction.cuboid).forEach(([x, y, z]) => {
         acc[`${x},${y},${z}`] = instruction.isOn;
       });
       return acc;
@@ -87,7 +87,21 @@ export const runChallengeA = (instructions) => {
   )(instructions);
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const getIntersections = () => {};
+
+const getOnBoxes = (instructions) => {
+  return instructions.reduce((acc, { isOn, cuboid }) => {
+    const intersections = getIntersections(acc, cuboid);
+    if (!intersections.length(acc, cuboid)) {
+      return isOn ? [...acc, cuboid] : acc;
+    }
+
+    if (isOn) {
+    } else {
+    }
+  }, []);
+};
+
+export const runChallengeB = (instructions) => {
+  return R.pipe(getOnBoxes)(instructions);
 };
