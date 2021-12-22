@@ -5,7 +5,10 @@ export const parseInput = (str) => {
     const [func, instructions] = line.split(" ");
     const instructionsArr = instructions.split(",").map((instruction) => {
       const [axis, range] = instruction.split("=");
-      return [axis, range.split("..").map(Number)];
+      const newRange = range.split("..").map(Number);
+      newRange[1] = newRange[1] + 1;
+
+      return [axis, newRange];
     });
 
     return {
@@ -16,10 +19,10 @@ export const parseInput = (str) => {
 };
 
 const getPossibleCubes = (cuboid) =>
-  R.range(cuboid.x[0], cuboid.x[1] + 1)
+  R.range(cuboid.x[0], cuboid.x[1])
     .map((x) =>
-      R.range(cuboid.y[0], cuboid.y[1] + 1).map((y) =>
-        R.range(cuboid.z[0], cuboid.z[1] + 1).map((z) => [x, y, z])
+      R.range(cuboid.y[0], cuboid.y[1]).map((y) =>
+        R.range(cuboid.z[0], cuboid.z[1]).map((z) => [x, y, z])
       )
     )
     .flat()
@@ -76,7 +79,7 @@ const getOnCount = (map) => {
 
 export const runChallengeA = (instructions) => {
   return R.pipe(
-    limitToBounds([-50, 50]),
+    limitToBounds([-50, 51]),
     R.reduce((acc, instruction) => {
       getPossibleCubes(instruction.cuboid).forEach(([x, y, z]) => {
         acc[`${x},${y},${z}`] = instruction.isOn;
