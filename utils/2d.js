@@ -86,6 +86,28 @@ export const getHvNeighbours = R.curry(({ x, y }, grid) => {
   return result;
 });
 
+export const getHNeighbours = R.curry(({ x, y }, grid) => {
+  const result = [];
+  if (x > 0) {
+    result.push({ y, x: x - 1 });
+  }
+  if (x < grid[y].length - 1) {
+    result.push({ y, x: x + 1 });
+  }
+  return result;
+});
+
+export const getVNeighbours = R.curry(({ x, y }, grid) => {
+  const result = [];
+  if (y > 0) {
+    result.push({ y: y - 1, x });
+  }
+  if (y < grid.length - 1) {
+    result.push({ y: y + 1, x });
+  }
+  return result;
+});
+
 export const reduce2dSubsection = R.curry((cb, initial, subsection, grid) => {
   let acc = initial;
   forEach2dSubsection(
