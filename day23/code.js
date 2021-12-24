@@ -178,18 +178,18 @@ export const _getCost = (from, to, board) => {
   return (xDiff + yDiff) * amphipodCosts[char];
 };
 
-let count = 0;
-
-export const _play = (board, level = 0) => {
-  count++;
-  // if (count > 2000) throw new Error("done");
-
+export const _play = (board, cost = 0, bestCost = { bestCost: Infinity }) => {
   // console.log(gridToString(board));
+
+  if (bestCost.bestCost < cost) return null;
 
   const amphipodPositions = _getAllLiveAmphipodPositions(board);
 
   if (!amphipodPositions.length) {
-    return 0; // Game complete!
+    if (cost < bestCost.bestCost) {
+      bestCost.bestCost = cost;
+    }
+    return cost; // Game complete!
   }
 
   const moves = amphipodPositions.flatMap((pos) =>
@@ -204,15 +204,11 @@ export const _play = (board, level = 0) => {
     .map(({ from, to }) => {
       const newBoard = _moveAmphipod(from, to, board);
       const newCost = _getCost(from, to, board);
-      const nextCost = _play(newBoard, level + 1);
-
-      return nextCost != null ? newCost + nextCost : null;
+      return _play(newBoard, cost + newCost, bestCost);
     })
     .filter((cost) => cost != null);
 
-  if (level <= 1) {
-    console.log(costs);
-  }
+  if (!costs.length) return null;
 
   // console.log(costs);
 
@@ -223,7 +219,12 @@ export const runChallengeA = (board) => {
   return _play(board);
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+export const runChallengeB = (board) => {
+  const unfoldedBoard = [
+    ...board.slice(0, 3),
+    "  #D#C#B#A#".split(""),
+    "  #D#B#A#C#".split(""),
+    ...board.slice(3),
+  ];
+  return _play(unfoldedBoard);
 };
