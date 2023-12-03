@@ -1,15 +1,15 @@
-import {
-  getIncreasedCount,
-  getSlidingWindowIncreasedCount,
-} from "./getIncreasedCount.js";
+import { runChallengeA, runChallengeB, parseInput } from "./code.js";
 import { readInput } from "../utils/readInput.js";
 
 const main = async () => {
-  const input = await readInput("day1/input.txt");
-  const readings = input.split("\n").map(Number);
+  const lines = (await readInput("day20/input.txt"));
+  const input = parseInput(lines);
 
-  console.log("A: " + getIncreasedCount(readings));
-  console.log("B: " + getSlidingWindowIncreasedCount(readings));
+  const resultA = runChallengeA(input);
+  console.log(JSON.stringify(resultA));
+
+  const resultB = runChallengeB(input);
+  console.log(JSON.stringify(resultB));
 };
 
 main();
