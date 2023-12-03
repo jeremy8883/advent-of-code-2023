@@ -18,8 +18,13 @@ xdescribe("Day 1: runChallengeA", () => {
 });
 
 describe("Day 1: runChallengeB", () => {
-  it("gets the results", () => {
+  it.only("gets the results", () => {
     const result = runChallengeB(mockInput);
     expect(result).toEqual(281);
+  });
+
+  it("edge case", () => {
+    const result = runChallengeB(parseInput(`twooneight`));
+    expect(result).toEqual(28);
   });
 });
