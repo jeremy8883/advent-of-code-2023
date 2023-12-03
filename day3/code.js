@@ -1,7 +1,13 @@
 import R from "ramda";
 import { parse2dCharArray } from "../utils/inputParsing.js";
-import { findPoints, getNeighbours, logGrid, map2d } from "../utils/2d.js";
+import {
+  find2dSubsectionPoint,
+  findPoints,
+  getNeighbours,
+  map2d,
+} from "../utils/2d.js";
 import { reduceChunks } from "../utils/array.js";
+import { newPoint, newRect, newRectByPoints } from "../utils/geometry.js";
 
 export const parseInput = parse2dCharArray;
 
@@ -41,7 +47,62 @@ export const runChallengeA = (grid) => {
   )(grid);
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const getPartNumberData = (grid) => {
+  const partNumberGrid = getPartNumberGrid(grid);
+
+  return partNumberGrid.flatMap((row, y) =>
+    reduceChunks(
+      (acc, val) => val != null,
+      (acc, val, x) => {
+        return !acc
+          ? {
+              pos: newPoint(x, y),
+              num: val,
+            }
+          : {
+              pos: acc.pos,
+              num: `${acc.num}${val}`,
+            };
+      },
+      null,
+      row
+    )
+  );
+};
+
+const findGear = (grid, data) => {
+  const pos = data.pos;
+  const len = data.num.length;
+  return find2dSubsectionPoint(
+    (val) => val === "*",
+    newRectByPoints(pos.x - 1, pos.y - 1, pos.x + len + 1, pos.y + 2),
+    grid
+  );
+};
+
+const getGearResults = (grid) =>
+  R.reduce((acc, data) => {
+    const gear = findGear(grid, data);
+    if (!gear) return acc;
+    const key = `${gear.x},${gear.y}`;
+
+    return {
+      ...acc,
+      [key]: [...(acc[key] ?? []), parseInt(data.num)],
+    };
+  }, {});
+
+const multiplyAndSumGearResults = R.pipe(
+  R.toPairs,
+  R.filter(([_, val]) => val.length === 2),
+  R.map((val) => val[1].reduce(R.multiply)),
+  R.sum
+);
+
+export const runChallengeB = (grid) => {
+  return R.pipe(
+    getPartNumberData,
+    getGearResults(grid),
+    multiplyAndSumGearResults
+  )(grid);
 };

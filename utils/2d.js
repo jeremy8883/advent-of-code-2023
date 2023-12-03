@@ -159,6 +159,24 @@ export const find2dSubsection = R.curry((cb, subsection, grid) => {
   }
 });
 
+export const find2dSubsectionPoint = R.curry((cb, subsection, grid) => {
+  for (
+    let y = Math.max(subsection.y, 0);
+    y < Math.min(subsection.y + subsection.height, grid.length);
+    y++
+  ) {
+    for (
+      let x = Math.max(subsection.x, 0);
+      x < Math.min(subsection.x + subsection.width, grid[y].length);
+      x++
+    ) {
+      if (cb(grid[y][x], x, y)) {
+        return newPoint(x, y);
+      }
+    }
+  }
+});
+
 export const gridToString = (grid) => {
   return grid.map((row) => row.join("")).join("\n");
 };

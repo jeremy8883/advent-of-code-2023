@@ -14,15 +14,16 @@ export const reduceChunks = R.curry((predicate, fn, initialValue, arr) => {
 
   let isReducing = false;
   let acc;
-  for (const item of arr) {
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i];
     if (!isReducing) {
-      if (predicate(initialValue, item)) {
-        acc = fn(initialValue, item);
+      if (predicate(initialValue, item, i)) {
+        acc = fn(initialValue, item, i);
         isReducing = true;
       }
     } else {
-      if (predicate(acc, item)) {
-        acc = fn(acc, item);
+      if (predicate(acc, item, i)) {
+        acc = fn(acc, item, i);
       } else {
         isReducing = false;
         result.push(acc);

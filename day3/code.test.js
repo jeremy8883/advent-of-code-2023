@@ -21,8 +21,8 @@ describe("Day 3: runChallengeA", () => {
 });
 
 describe("Day 3: runChallengeB", () => {
-  it("gets the results", () => {
+  it.only("gets the results", () => {
     const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(467835);
   });
 });
