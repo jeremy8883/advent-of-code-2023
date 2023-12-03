@@ -15,6 +15,8 @@ export const parseInput = (str) => {
   });
 };
 
+const getMaxValues = R.reduce(R.mergeWith(R.max), {});
+
 export const runChallengeA = (input) => {
   return input.reduce((acc, sets, index) => {
     if (
@@ -30,6 +32,8 @@ export const runChallengeA = (input) => {
 };
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  return input.reduce((acc, sets, index) => {
+    const maxes = getMaxValues(sets);
+    return acc + maxes.red * maxes.green * maxes.blue;
+  }, 0);
 };
