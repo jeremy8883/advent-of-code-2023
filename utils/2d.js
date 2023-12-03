@@ -1,5 +1,12 @@
 import R from "ramda";
-import { getX2, getY2, newRectByPoints, newSize } from "./geometry.js";
+import {
+  getX2,
+  getY2,
+  newPoint,
+  newRect,
+  newRectByPoints,
+  newSize,
+} from "./geometry.js";
 
 export const findByColumn = R.curry((predicate, grid) => {
   for (let x = 0; x < grid[0].length; x++) {
@@ -67,6 +74,20 @@ export const map2dSubsection = R.curry((cb, subsection, grid) => {
     cloned
   );
   return cloned;
+});
+
+export const getNeighbours = R.curry(({ x, y }, grid) => {
+  const result = [];
+  forEach2dSubsection(
+    (item, thisX, thisY) => {
+      if (!(x === thisX && y === thisY)) {
+        result.push(newPoint(thisX, thisY));
+      }
+    },
+    newRect(x - 1, y - 1, 3, 3),
+    grid
+  );
+  return result;
 });
 
 export const getHvNeighbours = R.curry(({ x, y }, grid) => {
@@ -180,4 +201,16 @@ export const reduceRect = R.curry((cb, initial, rect) => {
     }
   }
   return acc;
+});
+
+export const findPoints = R.curry((cb, grid) => {
+  const arr = [];
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      if (cb(grid[y][x], x, y)) {
+        arr.push(newPoint(x, y));
+      }
+    }
+  }
+  return arr;
 });
