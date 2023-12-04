@@ -9,16 +9,25 @@ export const parseInput = (str) =>
     };
   });
 
-export const runChallengeA = (input) => {
-  return R.pipe(
-    R.map(({ winningNums, cardNums }) => R.intersection(winningNums, cardNums)),
-    R.filter((matches) => matches.length > 0),
-    R.map((matches) => Math.pow(2, matches.length - 1)),
-    R.sum
-  )(input);
-};
+export const runChallengeA = R.pipe(
+  R.map(({ winningNums, cardNums }) => R.intersection(winningNums, cardNums)),
+  R.filter((matches) => matches.length > 0),
+  R.map((matches) => Math.pow(2, matches.length - 1)),
+  R.sum
+);
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  let cache = {};
+  return input
+    .map(
+      ({ winningNums, cardNums }) =>
+        R.intersection(winningNums, cardNums).length
+    )
+    .reverse()
+    .reduce((acc, count, i) => {
+      const thisScore =
+        1 + R.range(i - count, i).reduce((acc, j) => acc + cache[j], 0);
+      cache[i] = thisScore;
+      return acc + thisScore;
+    }, 0);
 };
