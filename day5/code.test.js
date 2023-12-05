@@ -46,6 +46,6 @@ describe("Day 5: runChallengeA", () => {
 describe("Day 5: runChallengeB", () => {
   it("gets the results", () => {
     const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(46);
   });
 });

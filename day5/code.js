@@ -40,6 +40,16 @@ export const runChallengeA = (input) => {
 };
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  const seedRanges = R.splitEvery(2, input.seeds).map(([from, len]) => [
+    from,
+    from + len,
+  ]);
+  return seedRanges.reduce((acc, seedRange) => {
+    let smallestLocation = acc;
+    for (let seed = seedRange[0]; seed < seedRange[1]; seed++) {
+      const thisLocation = getLocation(seed, input.maps);
+      smallestLocation = Math.min(smallestLocation, thisLocation);
+    }
+    return smallestLocation;
+  }, Infinity);
 };
