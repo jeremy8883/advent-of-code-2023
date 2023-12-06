@@ -27,7 +27,15 @@ export const runChallengeA = (input) => {
   return R.pipe(R.map(findPossibilities), R.product)(input);
 };
 
+export const parseInputB = R.pipe(
+  R.split("\n"),
+  R.map(
+    R.pipe(R.split(" "), R.filter(Boolean), R.tail, R.join(""), (n) =>
+      parseInt(n, 10)
+    )
+  )
+);
+
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  return findPossibilities(input);
 };
