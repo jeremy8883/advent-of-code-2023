@@ -1,12 +1,13 @@
 import R from "ramda";
 import { leftPad } from "../utils/string.js";
 import { reduce } from "../utils/array.js";
+import { parseInt10 } from "../utils/number.js";
 
 export const parseInput = (str) =>
   str
     .split("\n")
     .map(R.split(" "))
-    .map((l) => ({ hand: l[0], bid: parseInt(l[1], 10) }));
+    .map((l) => ({ hand: l[0], bid: parseInt10(l[1]) }));
 
 const scores = {
   A: 14,
@@ -33,86 +34,46 @@ const getCardCounts = R.pipe(
   R.reverse
 );
 
+const getHandScore = (hand) => {
+  const jCount = hand.split("").filter((c) => c === "X").length;
+  const cardCounts = getCardCounts(hand.replace(/X/g, ""));
+
+  return jCount === 5 || cardCounts[0] + jCount === 5
+    ? 7
+    : cardCounts[0] + jCount === 4
+    ? 6
+    : cardCounts[0] + jCount === 3 && cardCounts[1] === 2
+    ? 5
+    : cardCounts[0] + jCount === 3
+    ? 4
+    : cardCounts[0] === 2 && cardCounts[1] + jCount === 2
+    ? 3
+    : cardCounts[0] + jCount === 2
+    ? 2
+    : 1;
+};
+
 const handToStrength = R.pipe(
   R.map((c) => leftPad(2, scores[c])),
   R.join(""),
-  (str) => parseInt(str, 10)
+  parseInt10
 );
 
-export const runChallengeA = (input) => {
-  const getHandScore = (hand) => {
-    const cardCounts = getCardCounts(hand);
+const compareHands = (lineA, lineB) => {
+  const diff = getHandScore(lineA.hand) - getHandScore(lineB.hand);
 
-    if (cardCounts[0] === 5) {
-      return 7;
-    } else if (cardCounts[0] === 4) {
-      return 6;
-    } else if (cardCounts[0] === 3 && cardCounts[1] === 2) {
-      return 5;
-    } else if (cardCounts[0] === 3) {
-      return 4;
-    } else if (cardCounts[0] === 2 && cardCounts[1] === 2) {
-      return 3;
-    } else if (cardCounts[0] === 2) {
-      return 2;
-    } else {
-      return 1;
-    }
-  };
-
-  const compareHandsA = (lineA, lineB) => {
-    const handScoreA = getHandScore(lineA.hand);
-    const handScoreB = getHandScore(lineB.hand);
-
-    if (handScoreA !== handScoreB) {
-      return handScoreA - handScoreB;
-    } else {
-      return handToStrength(lineA.hand) - handToStrength(lineB.hand);
-    }
-  };
-
-  return R.sort(compareHandsA, input).reduce(
-    (acc, line, i) => acc + line.bid * (i + 1),
-    0
-  );
+  return diff !== 0
+    ? diff
+    : handToStrength(lineA.hand) - handToStrength(lineB.hand);
 };
 
-export const runChallengeB = (input) => {
-  const getHandScore = (hand) => {
-    const jCount = hand.split("").filter((c) => c === "X").length;
-    const cardCounts = getCardCounts(hand.replace(/X/g, ""));
+export const runChallengeA = R.pipe(
+  R.sort(compareHands),
+  reduce((acc, line, i) => acc + line.bid * (i + 1), 0)
+);
 
-    if (jCount === 5 || cardCounts[0] + jCount === 5) {
-      return 7;
-    } else if (cardCounts[0] + jCount === 4) {
-      return 6;
-    } else if (cardCounts[0] + jCount === 3 && cardCounts[1] === 2) {
-      return 5;
-    } else if (cardCounts[0] + jCount === 3) {
-      return 4;
-    } else if (cardCounts[0] === 2 && cardCounts[1] + jCount === 2) {
-      return 3;
-    } else if (cardCounts[0] + jCount === 2) {
-      return 2;
-    } else {
-      return 1;
-    }
-  };
-
-  const compareHandsB = (lineA, lineB) => {
-    const handScoreA = getHandScore(lineA.hand);
-    const handScoreB = getHandScore(lineB.hand);
-
-    if (handScoreA !== handScoreB) {
-      return handScoreA - handScoreB;
-    } else {
-      return handToStrength(lineA.hand) - handToStrength(lineB.hand);
-    }
-  };
-
-  return R.pipe(
-    R.map((l) => ({ ...l, hand: l.hand.replace(/J/g, "X") })),
-    R.sort(compareHandsB),
-    reduce((acc, line, i) => acc + line.bid * (i + 1), 0)
-  )(input);
-};
+export const runChallengeB = R.pipe(
+  R.map((l) => ({ ...l, hand: l.hand.replace(/J/g, "X") })),
+  R.sort(compareHands),
+  reduce((acc, line, i) => acc + line.bid * (i + 1), 0)
+);
