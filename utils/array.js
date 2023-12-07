@@ -36,3 +36,5 @@ export const reduceChunks = R.curry((predicate, fn, initialValue, arr) => {
 
   return result;
 });
+
+export const reduce = R.curry((cb, init, arr) => arr.reduce(cb, init));
