@@ -20,9 +20,8 @@ function* iterateInfinite(arr) {
   }
 }
 
-export const runChallengeA = (input) => {
-  const { nodes, instructions } = input;
-  let nextNodeKey = "AAA";
+const getPathCount = ({ nodes, instructions }, firstNodeKey, isEnd) => {
+  let nextNodeKey = firstNodeKey;
   let count = 0;
 
   for (const instruction of iterateInfinite(instructions)) {
@@ -30,13 +29,35 @@ export const runChallengeA = (input) => {
 
     count++;
 
-    if (nextNodeKey === "ZZZ") {
+    if (isEnd(nextNodeKey)) {
       return count;
     }
   }
 };
 
+export const runChallengeA = (input) => {
+  return getPathCount(input, "AAA", R.equals("ZZZ"));
+};
+
+const getLcm = (arr) =>
+  arr.reduce((acc, val) => {
+    let x = acc;
+    let y = val;
+
+    while (y !== 0) {
+      const oldY = y;
+      y = x % y;
+      x = oldY;
+    }
+
+    return (acc * val) / x;
+  }, arr[0]);
+
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  return R.pipe(
+    Object.keys,
+    R.filter(R.endsWith("A")),
+    R.map((startKey) => getPathCount(input, startKey, (k) => k.endsWith("Z"))),
+    getLcm
+  )(input.nodes);
 };
