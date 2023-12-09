@@ -4,7 +4,7 @@ import { parseInt10 } from "../utils/number.js";
 export const parseInput = (str) =>
   str.split("\n").map(R.pipe(R.split(" "), R.map(parseInt10)));
 
-const completeNextSequence = (line) => {
+const getDiffs = (line) => {
   let diffs = [line];
   while (!R.head(diffs).every(R.equals(0))) {
     diffs = [
@@ -16,6 +16,11 @@ const completeNextSequence = (line) => {
       ...diffs,
     ];
   }
+  return diffs;
+};
+
+const completeNextSequence = (line) => {
+  const diffs = getDiffs(line);
 
   diffs[0].push(0);
   for (let i = 1; i < diffs.length; i++) {
@@ -31,7 +36,19 @@ export const runChallengeA = R.pipe(
   R.sum
 );
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const completePrevSequence = (line) => {
+  let diffs = getDiffs(line);
+
+  diffs[0].unshift(0);
+  for (let i = 1; i < diffs.length; i++) {
+    diffs[i].unshift(R.head(diffs[i]) - R.head(diffs[i - 1]));
+  }
+
+  return R.last(diffs);
 };
+
+export const runChallengeB = R.pipe(
+  R.map(completePrevSequence),
+  R.map(R.head),
+  R.sum
+);
