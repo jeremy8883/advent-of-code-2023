@@ -41,7 +41,7 @@ export const find2d = R.curry((cb, grid) => {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (cb(grid[y][x], x, y)) {
-        return [x, y];
+        return newPoint(x, y);
       }
     }
   }
