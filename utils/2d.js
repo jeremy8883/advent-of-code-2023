@@ -159,6 +159,18 @@ export const find2dSubsection = R.curry((cb, subsection, grid) => {
   }
 });
 
+export const getSubsection = R.curry((subsection, grid) => {
+  const rows = [];
+  for (
+    let y = Math.max(subsection.y, 0);
+    y < Math.min(subsection.y + subsection.height, grid.length);
+    y++
+  ) {
+    rows.push(grid[y].slice(subsection.x, subsection.x + subsection.width));
+  }
+  return rows;
+});
+
 export const find2dSubsectionPoint = R.curry((cb, subsection, grid) => {
   for (
     let y = Math.max(subsection.y, 0);
@@ -232,3 +244,71 @@ export const findPoints = R.curry((cb, grid) => {
   }
   return arr;
 });
+
+export const expandGrid = (multiple, callback, grid) => {
+  const expandedGrid = newGrid(
+    null,
+    newSize(grid[0].length * multiple, grid.length * multiple)
+  );
+
+  forEach2d((val, x, y) => {
+    const newItems = callback(val, x, y);
+    forEach2d((val, i, j) => {
+      expandedGrid[y * multiple + j][x * multiple + i] = val;
+    }, newItems);
+  }, grid);
+
+  return expandedGrid;
+};
+
+export const shrinkGrid = R.curry((multiple, callback, grid) => {
+  const shrunkGrid = newGrid(
+    null,
+    newSize(grid[0].length / multiple, grid.length / multiple)
+  );
+
+  return map2d((val, x, y) => {
+    return callback(
+      getSubsection(
+        newRect(x * multiple, y * multiple, multiple, multiple),
+        grid
+      )
+    );
+  }, shrunkGrid);
+});
+
+const bucketFillWithPredicate = R.curry(
+  (predicate, newValue, startPos, grid) => {
+    const queue = [];
+    queue.push(startPos);
+    const visited = map2d(() => false, grid);
+    const newGrid = map2d((v) => v, grid);
+
+    while (queue.length > 0) {
+      const pos = queue.shift();
+      if (visited[pos.y][pos.x]) continue;
+
+      visited[pos.y][pos.x] = true;
+      if (predicate(grid[pos.y][pos.x], pos.x, pos.y)) {
+        newGrid[pos.y][pos.x] = newValue;
+        queue.push(...getNeighbours(pos, grid));
+      }
+    }
+
+    return newGrid;
+  }
+);
+
+export const bucketFill = R.curry((newValue, startPos, grid) => {
+  const firstVal = grid[startPos.y][startPos.x];
+  return bucketFillWithPredicate(
+    (v) => v === firstVal,
+    newValue,
+    startPos,
+    grid
+  );
+});
+
+export const replace2d = R.curry((from, to, grid) =>
+  map2d((val) => (val === from ? to : val), grid)
+);

@@ -1,7 +1,16 @@
 import R from "ramda";
 import { parse2dCharArray } from "../utils/inputParsing.js";
-import { find2d, getHvNeighbours, map2d, reduce2d } from "../utils/2d.js";
-import { newPoint } from "../utils/geometry.js";
+import {
+  bucketFill,
+  expandGrid,
+  find2d,
+  getHvNeighbours,
+  map2d,
+  reduce2d,
+  replace2d,
+  shrinkGrid,
+} from "../utils/2d.js";
+import { newPoint, newSize } from "../utils/geometry.js";
 
 export const parseInput = parse2dCharArray;
 
@@ -38,9 +47,11 @@ const getConnectingNeighbours = (pos, grid) => {
   }
 };
 
+const findStartPoint = (grid) => find2d(R.equals("S"), grid);
+
 export const runChallengeA = (input) => {
   const queue = [];
-  const startPos = find2d(R.equals("S"), input);
+  const startPos = findStartPoint(input);
   queue.push(startPos);
   const distances = map2d(() => null, input);
   distances[startPos.y][startPos.x] = 0;
@@ -60,7 +71,68 @@ export const runChallengeA = (input) => {
   return reduce2d(R.max, 0, distances);
 };
 
+const expandPipeGrid = (grid) =>
+  expandGrid(
+    3,
+    (val) => {
+      switch (val) {
+        case ".":
+          return parse2dCharArray(`...
+...
+...`);
+        case "|":
+          return parse2dCharArray(`.#.
+.#.
+.#.`);
+        case "-":
+          return parse2dCharArray(`...
+###
+...`);
+        case "L":
+          return parse2dCharArray(`.#.
+.##
+...`);
+        case "J":
+          return parse2dCharArray(`.#.
+##.
+...`);
+        case "7":
+          return parse2dCharArray(`...
+##.
+.#.`);
+        case "F":
+          return parse2dCharArray(`...
+.##
+.#.`);
+        case "S":
+          return parse2dCharArray(`.#.
+###
+.#.`);
+        default:
+          throw new Error("Invalid char " + val);
+      }
+    },
+    grid
+  );
+
+const removeOuterPipes = (grid) =>
+  map2d(
+    (val, x, y) =>
+      x === 0 || x === grid[0].length - 1 || y === 0 || y === grid.length - 1
+        ? "."
+        : val,
+    grid
+  );
+
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  const startPoint = findStartPoint(input);
+  return R.pipe(
+    expandPipeGrid,
+    removeOuterPipes,
+    bucketFill("M", newPoint(startPoint.x * 3 + 1, startPoint.y * 3 + 1)), // Trace main pipe
+    replace2d("#", "."), // Remove junk pipes
+    bucketFill("O", newPoint(0, 0)), // Mark outer grounds
+    shrinkGrid(3, (section) => section[1][1]),
+    reduce2d((acc, val) => (val === "." ? acc + 1 : acc), 0)
+  )(input);
 };
