@@ -328,3 +328,21 @@ export const rotateGrid90 = (grid) => {
 
   return rotatedGrid;
 };
+
+export const getRow = (grid, y, xFrom, xTo) => {
+  const _xFrom = Math.min(xFrom, xTo);
+  const _xTo = Math.max(xFrom, xTo);
+
+  return grid[y].slice(_xFrom, _xTo);
+};
+
+export const getCol = (grid, x, yFrom, yTo) => {
+  const _yFrom = Math.min(yFrom, yTo);
+  const _yTo = Math.max(yFrom, yTo);
+
+  const colValues = [];
+  for (let i = _yFrom; i < _yTo; i++) {
+    colValues.push(grid[i][x]);
+  }
+  return colValues;
+};
