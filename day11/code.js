@@ -4,19 +4,20 @@ import { findPoints, logGrid, rotateGrid90 } from "../utils/2d.js";
 
 export const parseInput = parse2dCharArray;
 
-const expandRows = (grid) =>
+const expandRows = (factor) => (grid) =>
   grid.flatMap((row) => {
-    return row.every((i) => i === ".") ? [row, row] : [row];
+    return row.every((i) => i === ".") ? R.repeat(row, factor) : [row];
   });
 
-const expandSpace = R.pipe(
-  expandRows,
-  rotateGrid90,
-  expandRows,
-  rotateGrid90,
-  rotateGrid90,
-  rotateGrid90
-);
+const expandSpace = (factor) =>
+  R.pipe(
+    expandRows(factor),
+    rotateGrid90,
+    expandRows(factor),
+    rotateGrid90,
+    rotateGrid90,
+    rotateGrid90
+  );
 
 const getDistance = (pointA, pointB) =>
   Math.abs(pointA.x - pointB.x) + Math.abs(pointA.y - pointB.y);
@@ -34,9 +35,6 @@ const findDistances = (grid) => {
   return distances;
 };
 
-export const runChallengeA = R.pipe(expandSpace, findDistances, R.sum);
+export const runChallengeA = R.pipe(expandSpace(2), findDistances, R.sum);
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
-};
+export const runChallengeB = R.pipe(expandSpace(100), findDistances, R.sum);
