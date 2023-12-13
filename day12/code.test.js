@@ -8,7 +8,7 @@ const mockInput = parseInput(
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1`
 );
-// const mockInput = parseInput(`???.### 1,1,3`);
+// const mockInput = parseInput(`???? 1,1`);
 
 describe("Day 12: runChallengeA", () => {
   it("gets the results", () => {

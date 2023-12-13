@@ -10,13 +10,26 @@ export const parseInput = (str) =>
     };
   });
 
-const slidingWindowReduce = (windowLength, cb, initialVal, startIndex, str) => {
-  let acc = initialVal;
+const slidingWindowSum = (
+  windowLength,
+  cb,
+  initialVal,
+  startIndex,
+  str,
+  cache,
+  cacheKeyPrefix
+) => {
+  const results = R.repeat(undefined, str.length - windowLength);
+
   for (let i = startIndex; i <= str.length - windowLength; i++) {
+    const cacheKey = `${cacheKeyPrefix}|${i}`;
+    if (cache[cacheKey] !== undefined) {
+      results[i] = cache[cacheKey];
+      break;
+    }
     const substr = str.substring(i, i + windowLength);
     try {
-      acc = cb(
-        acc,
+      results[i] = cb(
         substr,
         i,
         str.substring(0, i),
@@ -24,56 +37,66 @@ const slidingWindowReduce = (windowLength, cb, initialVal, startIndex, str) => {
       );
     } catch (ex) {
       if (ex.code === "BREAK_SLIDE") {
-        acc = ex.acc;
+        results[i] = ex.val;
         break;
       } else {
         throw ex;
       }
     }
   }
-  return acc;
+
+  // Set cache
+  let sum = 0;
+  for (let i = str.length - windowLength + 1; i >= startIndex; i--) {
+    if (results[i] === undefined) continue;
+    sum += results[i];
+    cache[`${cacheKeyPrefix}|${i}`] = sum;
+  }
+
+  return sum;
 };
 
-const breakSlide = (acc) =>
+const breakSlide = (val) =>
   Object.assign(new Error("Break sliding window"), {
     code: "BREAK_SLIDE",
-    acc,
+    val,
   });
 
 const findPermutationCount = (
   { report, groupLengths },
   startIndex = 0,
-  path = []
+  path = [],
+  cache = {}
 ) => {
   const groupLengthsPartial = groupLengths.slice(path.length);
 
-  return slidingWindowReduce(
+  return slidingWindowSum(
     groupLengthsPartial[0],
-    (acc, val, i, left, right) => {
+    (val, i, left, right) => {
       // If we hit a `#`, it is guaranteed that we cannot slide further, so we must break
-      const breakOrReturn = (newAcc) => {
+      const breakOrReturn = (count) => {
         if (val[0] === "#") {
-          throw breakSlide(newAcc);
+          throw breakSlide(count);
         } else {
-          return newAcc;
+          return count;
         }
       };
 
       // Definite no match
       if (val.includes(".")) {
-        return breakOrReturn(acc);
+        return breakOrReturn(0);
       }
 
       if (val[0] === "#" && right[0] === "#") {
-        throw breakSlide(acc); // Too many in the group, gone too far
+        throw breakSlide(0); // Too many in the group, gone too far
       }
       if (val[0] === "?" && right[0] === "#") {
-        return acc;
+        return 0;
       }
 
       if (groupLengthsPartial.length > 1) {
         if (i + val.length + 1 >= report.length) {
-          throw breakSlide(acc); // We have more reported values, but we've hit the end early
+          throw breakSlide(0); // We have more reported values, but we've hit the end early
         }
         const count = findPermutationCount(
           {
@@ -81,25 +104,28 @@ const findPermutationCount = (
             groupLengths,
           },
           i + val.length + 1,
-          [...path, i]
+          [...path, i],
+          cache
         );
         if (!count) {
-          return breakOrReturn(acc);
+          return breakOrReturn(0);
         }
 
-        return breakOrReturn(acc + count);
+        return breakOrReturn(count);
       } else {
         // The result is actually closer to the right
         if (/#/.test(right)) {
-          return breakOrReturn(acc);
+          return breakOrReturn(0);
         }
 
-        return breakOrReturn(acc + 1);
+        return breakOrReturn(1);
       }
     },
     0,
     startIndex,
-    report
+    report,
+    cache,
+    `${path.length}`
   );
 };
 
