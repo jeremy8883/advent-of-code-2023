@@ -40,38 +40,28 @@ const breakSlide = (acc) =>
     acc,
   });
 
-const isPossibilityValid = (report, groupLengths, indexes) => {
-  let tempReport = report;
-  for (let i = 0; i < groupLengths.length; i++) {
-    const section = report.substr(indexes[i], groupLengths[i]);
-
-    tempReport =
-      tempReport.substr(0, indexes[i]) +
-      section
-        .split("")
-        .map((c) => "_")
-        .join("") +
-      tempReport.substr(indexes[i] + groupLengths[i]);
-  }
-  return !tempReport.includes("#");
-};
-
-const findPermutations = (
+const findPermutationCount = (
   { report, groupLengths },
   startIndex = 0,
   path = []
 ) => {
   const groupLengthsPartial = groupLengths.slice(path.length);
+
   return slidingWindowReduce(
     groupLengthsPartial[0],
     (acc, val, i, left, right) => {
+      // If we hit a `#`, it is guaranteed that we cannot slide further, so we must break
+      const breakOrReturn = (newAcc) => {
+        if (val[0] === "#") {
+          throw breakSlide(newAcc);
+        } else {
+          return newAcc;
+        }
+      };
+
       // Definite no match
       if (val.includes(".")) {
-        if (val[0] === "#") {
-          throw breakSlide(acc);
-        } else {
-          return acc;
-        }
+        return breakOrReturn(acc);
       }
 
       if (val[0] === "#" && right[0] === "#") {
@@ -85,7 +75,7 @@ const findPermutations = (
         if (i + val.length + 1 >= report.length) {
           throw breakSlide(acc); // We have more reported values, but we've hit the end early
         }
-        const permutations = findPermutations(
+        const count = findPermutationCount(
           {
             report,
             groupLengths,
@@ -93,62 +83,33 @@ const findPermutations = (
           i + val.length + 1,
           [...path, i]
         );
-        if (!permutations.length) {
-          if (val[0] === "#") {
-            throw breakSlide(acc);
-          } else {
-            return acc;
-          }
+        if (!count) {
+          return breakOrReturn(acc);
         }
 
-        const newAcc = [...acc, ...permutations];
-        if (val[0] === "#") {
-          throw breakSlide(newAcc);
-        } else {
-          return newAcc;
-        }
+        return breakOrReturn(acc + count);
       } else {
         // The result is actually closer to the right
         if (/#/.test(right)) {
-          if (val[0] === "#") {
-            throw breakSlide(acc);
-          } else {
-            return acc;
-          }
+          return breakOrReturn(acc);
         }
 
-        // (╯°□°)╯︵ ┻━┻ I didn't want to do this!
-        // const newIndexes = [...path, i];
-        // if (!isPossibilityValid(report, groupLengths, newIndexes)) {
-        //   console.log(report);
-        //   throw breakSlide(acc);
-        // }
-        const newAcc = [...acc, [...path, i]];
-        if (val[0] === "#") {
-          throw breakSlide(newAcc);
-        } else {
-          return newAcc;
-        }
+        return breakOrReturn(acc + 1);
       }
     },
-    [],
+    0,
     startIndex,
     report
   );
 };
 
-export const runChallengeA = R.pipe(
-  R.map(findPermutations),
-  R.map(R.prop("length")),
-  R.sum
-);
+export const runChallengeA = R.pipe(R.map(findPermutationCount), R.sum);
 
 export const runChallengeB = R.pipe(
   R.map(({ report, groupLengths }) => ({
     report: R.repeat(report, 5).join("?"),
     groupLengths: R.repeat(groupLengths, 5).flat(),
   })),
-  R.map(findPermutations),
-  R.map(R.prop("length")),
+  R.map(findPermutationCount),
   R.sum
 );
