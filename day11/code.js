@@ -1,6 +1,6 @@
 import R from "ramda";
 import { parse2dCharArray } from "../utils/inputParsing.js";
-import { findPoints, getCol, getRow, rotateGrid90 } from "../utils/2d.js";
+import { findPoints, getCol, getRow, rotateGrid90Cw } from "../utils/2d.js";
 
 export const parseInput = parse2dCharArray;
 
@@ -13,11 +13,11 @@ const expandRows = (grid) =>
 
 const markExpanded = R.pipe(
   expandRows,
-  rotateGrid90,
+  rotateGrid90Cw,
   expandRows,
-  rotateGrid90,
-  rotateGrid90,
-  rotateGrid90
+  rotateGrid90Cw,
+  rotateGrid90Cw,
+  rotateGrid90Cw
 );
 
 const charToDistance = R.curry((expandedValue, v) =>

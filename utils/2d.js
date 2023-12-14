@@ -313,7 +313,7 @@ export const replace2d = R.curry((from, to, grid) =>
   map2d((val) => (val === from ? to : val), grid)
 );
 
-export const rotateGrid90 = (grid) => {
+export const rotateGrid90Cw = (grid) => {
   const rows = grid.length;
   const cols = grid[0].length;
 
@@ -322,6 +322,22 @@ export const rotateGrid90 = (grid) => {
     const newRow = [];
     for (let x = rows - 1; x >= 0; x--) {
       newRow.push(grid[x][y]);
+    }
+    rotatedGrid.push(newRow);
+  }
+
+  return rotatedGrid;
+};
+
+export const rotateGrid90Ccw = (grid) => {
+  const rows = grid.length;
+  const cols = grid[0].length;
+
+  const rotatedGrid = [];
+  for (let y = 0; y < cols; y++) {
+    const newRow = [];
+    for (let x = rows - 1; x >= 0; x--) {
+      newRow.push(grid[grid[0].length - x - 1][grid.length - y - 1]);
     }
     rotatedGrid.push(newRow);
   }

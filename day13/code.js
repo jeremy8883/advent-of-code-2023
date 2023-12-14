@@ -1,6 +1,6 @@
 import R from "ramda";
 import { reduceChunks } from "../utils/array.js";
-import { rotateGrid90 } from "../utils/2d.js";
+import { rotateGrid90Cw } from "../utils/2d.js";
 
 export const parseInput = (str) =>
   reduceChunks(
@@ -48,7 +48,7 @@ const run = (imperfectionCount) =>
   R.pipe(
     R.map(
       (grid) =>
-        getReflectionRowIndex(imperfectionCount, rotateGrid90(grid)) +
+        getReflectionRowIndex(imperfectionCount, rotateGrid90Cw(grid)) +
         getReflectionRowIndex(imperfectionCount, grid) * 100
     ),
     R.sum
