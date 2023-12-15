@@ -53,7 +53,7 @@ export const runChallengeB = (input) => {
   for (let i = 0; i < cycleCount; i++) {
     const hash = getHash(newGrid);
 
-    if (!hasSkipped && hashes.includes(hash)) {
+    if (hashes?.includes(hash)) {
       const hashIndex = hashes.findIndex((v) => v === hash);
       const rotationLength = i - hashIndex;
 
