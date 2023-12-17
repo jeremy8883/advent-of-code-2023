@@ -26,6 +26,17 @@ describe("Day 17: runChallengeA", () => {
 describe("Day 17: runChallengeB", () => {
   it("gets the results", () => {
     const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(94);
+  });
+
+  it("gets the results", () => {
+    const result = runChallengeB(
+      parseInput(`111111111111
+999999999991
+999999999991
+999999999991
+999999999991`)
+    );
+    expect(result).toEqual(71);
   });
 });

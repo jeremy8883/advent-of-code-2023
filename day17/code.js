@@ -1,7 +1,7 @@
 import R from "ramda";
 import { parse2dNumberArray } from "../utils/inputParsing.js";
 import { addPoints, newPoint } from "../utils/geometry.js";
-import { getSize, isInsideGrid, logGrid, map2d, newGrid } from "../utils/2d.js";
+import { getSize, isInsideGrid, newGrid } from "../utils/2d.js";
 import PriorityQueue from "priorityqueuejs";
 export const parseInput = parse2dNumberArray;
 
@@ -18,61 +18,54 @@ const getLastDirection = (points) => {
   return getDirection(points[points.length - 2], points[points.length - 1]);
 };
 
-const getIs3InARow = (path) => {
-  if (path.length < 4) return false;
-  const directions = R.pipe(
-    R.takeLast(4),
-    R.aperture(2),
-    R.map(([a, b]) => getDirection(a, b))
-  )(path);
+const getSameAxisCount = (path) => {
+  if (path.length === 0) return 0;
+  if (path.length === 1) return 1;
 
-  return directions.every(R.equals(directions[0]));
+  let lastDirection = null;
+  for (let i = path.length - 2; i >= 0; i--) {
+    const direction = getDirection(path[i], path[i + 1]);
+    if (lastDirection !== null && !R.equals(direction, lastDirection)) {
+      return path.length - i - 1;
+    }
+
+    lastDirection = direction;
+  }
+
+  return path.length;
 };
 
-const getLrf = (pos, path) => {
+const getLrf = (pos, path, minSame, maxSame) => {
   const direction = getLastDirection(path) || newPoint(1, 0);
 
-  const directions = [
-    getIs3InARow(path) ? null : direction,
-    newPoint(-direction.y, direction.x),
-    newPoint(direction.y, -direction.x),
-  ].filter(Boolean);
+  const sameDirectionCount = getSameAxisCount(path);
+
+  const directions =
+    path.length > 1 && sameDirectionCount < minSame
+      ? [direction]
+      : [
+          sameDirectionCount >= maxSame ? null : direction,
+          newPoint(-direction.y, direction.x),
+          newPoint(direction.y, -direction.x),
+        ].filter(Boolean);
 
   return directions.map((d) => addPoints(pos, d));
 };
 
-const pathToGrid = (grid, path) => {
-  return path.reduce((acc, val) => {
-    acc[val.y][val.x] = "#";
-    return acc;
-  }, newGrid(".", getSize(grid)));
-};
-
-const getKey = (path) => {
+const getKey = (path, maxSame) => {
   if (path.length < 2) {
     return `0,0x1`;
   }
-  const directions = R.pipe(
-    R.takeLast(4),
-    R.aperture(2),
-    R.map(([a, b]) => getDirection(a, b)),
-    R.reverse
-  )(path);
-  const count = directions.findIndex((d) => !R.equals(d, directions[0])) + 1;
-  return `${directions[0].x},${directions[0].y}x${count}`;
+  const lastDirection = getLastDirection(path);
+  const sameDirectionCount = Math.min(maxSame, getSameAxisCount(path));
+  return `${lastDirection.x},${lastDirection.y}x${sameDirectionCount}`;
 };
 
-const getHeuristic = (pos, endPos) =>
-  Math.abs(pos.x - endPos.x) + Math.abs(pos.y - endPos.y);
-
-export const getShortestPath = (grid) => {
-  const queue = new PriorityQueue(
-    (a, b) => -(a.costSoFar + a.heuristic - b.costSoFar + a.heuristic)
-  );
+export const getShortestPath = (grid, minSame, maxSame) => {
+  const queue = new PriorityQueue((a, b) => -(a.costSoFar - b.costSoFar));
   const startPos = newPoint(0, 0);
   const destPos = newPoint(grid[0].length - 1, grid.length - 1);
   const visited = newGrid(() => ({}), getSize(grid));
-  let bestResult = null;
 
   queue.enq({
     costSoFar: 0,
@@ -81,44 +74,33 @@ export const getShortestPath = (grid) => {
   while (queue.size()) {
     const next = queue.deq();
     const pos = R.last(next.path);
-    const key = getKey(next.path);
+    const key = getKey(next.path, maxSame);
 
     if (visited[pos.y][pos.x][key] <= next.costSoFar) {
       continue;
     }
 
     visited[pos.y][pos.x][key] = next.costSoFar;
-    if (R.equals(destPos, pos)) {
-      if (!bestResult || next.costSoFar < bestResult.costSoFar) {
-        console.log(next.costSoFar);
-        bestResult = next;
-      }
-      continue;
-      // return next;
+    if (R.equals(destPos, pos) && getSameAxisCount(next.path) >= minSame) {
+      return next;
     }
 
-    for (const nextPos of getLrf(pos, next.path)) {
+    for (const nextPos of getLrf(pos, next.path, minSame, maxSame)) {
       if (!isInsideGrid(nextPos, grid)) continue;
       queue.enq({
         costSoFar: next.costSoFar + grid[nextPos.y][nextPos.x],
-        // heuristic: getHeuristic(nextPos, destPos),
-        heuristic: 0,
         path: [...next.path, nextPos],
       });
     }
   }
-
-  return bestResult;
-  // return undefined;
 };
 
 export const runChallengeA = (input) => {
-  const result = getShortestPath(input);
-  logGrid(pathToGrid(input, result.path));
+  const result = getShortestPath(input, 1, 4);
   return result.costSoFar;
 };
 
 export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+  const result = getShortestPath(input, 5, 11);
+  return result.costSoFar;
 };
