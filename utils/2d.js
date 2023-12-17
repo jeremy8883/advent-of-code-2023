@@ -362,3 +362,9 @@ export const getCol = (grid, x, yFrom, yTo) => {
   }
   return colValues;
 };
+
+export const isInsideGrid = (point, grid) =>
+  point.x >= 0 &&
+  point.y >= 0 &&
+  point.x < grid[0].length &&
+  point.y < grid.length;
