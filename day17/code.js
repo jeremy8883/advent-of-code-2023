@@ -5,11 +5,6 @@ import { getSize, isInsideGrid, logGrid, map2d, newGrid } from "../utils/2d.js";
 import PriorityQueue from "priorityqueuejs";
 export const parseInput = parse2dNumberArray;
 
-const getCost = (grid, { path }) => {
-  const pos = R.last(path);
-  return grid[pos.y][pos.x];
-};
-
 const getDirection = (pointA, pointB) =>
   newPoint(
     pointA.x < pointB.x ? 1 : pointA.x > pointB.x ? -1 : 0,
@@ -34,12 +29,8 @@ const getIs3InARow = (path) => {
   return directions.every(R.equals(directions[0]));
 };
 
-const getLrf = (pos, path, debug) => {
+const getLrf = (pos, path) => {
   const direction = getLastDirection(path) || newPoint(1, 0);
-
-  if (debug) {
-    console.log(direction, path);
-  }
 
   const directions = [
     getIs3InARow(path) ? null : direction,
@@ -57,51 +48,22 @@ const pathToGrid = (grid, path) => {
   }, newGrid(".", getSize(grid)));
 };
 
-const getKey = R.pipe(
-  R.takeLast(4),
-  R.map((p) => `${p.x},${p.y}`),
-  R.join("|")
-);
-
-const debugPath = [
-  newPoint(0, 0),
-  newPoint(1, 0),
-  newPoint(2, 0),
-  newPoint(2, 1),
-  newPoint(3, 1),
-  newPoint(4, 1),
-  newPoint(5, 1),
-  newPoint(5, 0),
-  newPoint(6, 0),
-  newPoint(7, 0),
-  newPoint(8, 0),
-  newPoint(8, 1),
-  newPoint(8, 2),
-  newPoint(9, 2),
-  newPoint(10, 2),
-  newPoint(10, 3),
-  newPoint(10, 4),
-  newPoint(11, 4),
-  newPoint(11, 5),
-  newPoint(11, 6),
-  newPoint(11, 7),
-  newPoint(12, 7),
-  newPoint(12, 8),
-  newPoint(12, 9),
-  newPoint(12, 10),
-  newPoint(11, 10),
-  newPoint(11, 11),
-  newPoint(11, 12),
-  newPoint(12, 12),
-];
-
-const isOnPath = (path) => {
-  if (path.length > debugPath.length) return false;
-  return R.equals(R.take(path.length, debugPath), path);
+const getKey = (path) => {
+  if (path.length < 2) {
+    return `0,0x1`;
+  }
+  const directions = R.pipe(
+    R.takeLast(4),
+    R.aperture(2),
+    R.map(([a, b]) => getDirection(a, b)),
+    R.reverse
+  )(path);
+  const count = directions.findIndex((d) => !R.equals(d, directions[0])) + 1;
+  return `${directions[0].x},${directions[0].y}x${count}`;
 };
 
 const getHeuristic = (pos, endPos) =>
-  2 * (Math.abs(pos.x - endPos.x) + Math.abs(pos.y - endPos.y));
+  Math.abs(pos.x - endPos.x) + Math.abs(pos.y - endPos.y);
 
 export const getShortestPath = (grid) => {
   const queue = new PriorityQueue(
@@ -114,7 +76,6 @@ export const getShortestPath = (grid) => {
 
   queue.enq({
     costSoFar: 0,
-    // costSoFar: grid[startPos.y][startPos.x],
     path: [startPos],
   });
   while (queue.size()) {
@@ -122,16 +83,7 @@ export const getShortestPath = (grid) => {
     const pos = R.last(next.path);
     const key = getKey(next.path);
 
-    // if (isOnPath(next.path)) {
-    //   console.log(
-    //     "!!!",
-    //     next.path,
-    //     next.costSoFar,
-    //     R.sum(next.path.map((p) => grid[p.y][p.x]))
-    //   );
-    // }
-
-    if (visited[pos.y][pos.x][key] < next.costSoFar) {
+    if (visited[pos.y][pos.x][key] <= next.costSoFar) {
       continue;
     }
 
@@ -149,13 +101,12 @@ export const getShortestPath = (grid) => {
       if (!isInsideGrid(nextPos, grid)) continue;
       queue.enq({
         costSoFar: next.costSoFar + grid[nextPos.y][nextPos.x],
-        heuristic: getHeuristic(nextPos, destPos),
+        // heuristic: getHeuristic(nextPos, destPos),
+        heuristic: 0,
         path: [...next.path, nextPos],
       });
     }
   }
-
-  // logGrid(map2d((val) => `${val.size},`, visited));
 
   return bestResult;
   // return undefined;
