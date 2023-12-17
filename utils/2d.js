@@ -198,7 +198,11 @@ export const logGrid = (g) => {
 };
 
 export const newGrid = R.curry((defaultValue, { width, height }) =>
-  R.range(0, height).map(() => R.range(0, width).map(() => defaultValue))
+  R.range(0, height).map(() =>
+    R.range(0, width).map(() => {
+      return typeof defaultValue === "function" ? defaultValue() : defaultValue;
+    })
+  )
 );
 
 export const getBounds = (points) =>
