@@ -1,7 +1,7 @@
 import R from "ramda";
 import { parse2dCharArray } from "../utils/inputParsing.js";
-import { getSize, isInsideGrid, logGrid, map2d, newGrid } from "../utils/2d.js";
-import { addPoints, isInside, newPoint } from "../utils/geometry.js";
+import { isInsideGrid, logGrid, map2d } from "../utils/2d.js";
+import { addPoints, newPoint } from "../utils/geometry.js";
 
 export const parseInput = parse2dCharArray;
 
@@ -14,16 +14,13 @@ const reflectVector = (vector, slope) => {
     return newPoint(-vector.x, vector.y);
   }
 
-  // This will always be 1
-  const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
   const angle = Math.atan2(vector.y, vector.x);
   const slopeAngle = Math.atan(slope);
-
   const reflectedAngle = 2 * slopeAngle - angle;
 
   return newPoint(
-    Math.round(magnitude * Math.cos(reflectedAngle)),
-    Math.round(magnitude * Math.sin(reflectedAngle))
+    Math.round(Math.cos(reflectedAngle)),
+    Math.round(Math.sin(reflectedAngle))
   );
 };
 
@@ -53,10 +50,10 @@ const charToSlope = {
 
 const pointToString = (p) => `${p.x},${p.y}`;
 
-export const runChallengeA = (grid) => {
+const energiseCells = (initDirection, initPos, grid) => {
   const visited = map2d(() => new Set(), grid);
   const queue = [];
-  queue.push({ direction: newPoint(1, 0), pos: newPoint(0, 0) });
+  queue.push({ direction: initDirection, pos: initPos });
 
   while (queue.length > 0) {
     // logGrid(map2d((c) => (c.size ? "#" : "."), visited));
@@ -92,7 +89,25 @@ export const runChallengeA = (grid) => {
   return sumVisited(visited);
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+export const runChallengeA = (grid) =>
+  energiseCells(newPoint(1, 0), newPoint(0, 0), grid);
+
+export const runChallengeB = (grid) => {
+  let max = 0;
+  for (let x = 0; x < grid[0].length; x++) {
+    max = Math.max(max, energiseCells(newPoint(0, 1), newPoint(x, 0), grid));
+    max = Math.max(
+      max,
+      energiseCells(newPoint(0, -1), newPoint(x, grid.length - 1), grid)
+    );
+  }
+  for (let y = 0; y < grid.length; y++) {
+    max = Math.max(max, energiseCells(newPoint(1, 0), newPoint(0, y), grid));
+    max = Math.max(
+      max,
+      energiseCells(newPoint(-1, 0), newPoint(grid[0].length - 1, y), grid)
+    );
+  }
+
+  return max;
 };
