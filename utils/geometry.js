@@ -20,6 +20,11 @@ export const pointEquals = (pA, pB) => pA.x === pB.x && pA.y === pB.y;
 
 export const addPoints = (pA, pB) => ({ x: pA.x + pB.x, y: pA.y + pB.y });
 
+export const multiplyPoint = (p, amount) => ({
+  x: p.x * amount,
+  y: p.y * amount,
+});
+
 export const getX2 = (rect) => rect.x + rect.width;
 
 export const getY2 = (rect) => rect.y + rect.height;
