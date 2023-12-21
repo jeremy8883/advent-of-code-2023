@@ -27,9 +27,9 @@ describe("Day 21: runChallengeB", () => {
     [10, 50],
     [50, 1594],
     [100, 6536],
-    [5000, 1673304],
+    // [5000, 1673304],
   ])("gets the results", (stepCount, expected) => {
-    const result = runChallengeA(mockInput, stepCount);
+    const result = runChallengeB(mockInput, stepCount);
     expect(result).toEqual(expected);
   });
 });

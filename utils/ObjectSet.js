@@ -1,5 +1,6 @@
 export class ObjectSet {
-  constructor() {
+  constructor(getKey) {
+    this._getKey = getKey;
     this.items = new Map();
   }
 
@@ -28,6 +29,10 @@ export class ObjectSet {
   }
 
   getKey(obj) {
+    if (this._getKey) {
+      return this._getKey;
+    }
+
     return (
       typeof obj + "_" + (typeof obj === "object" ? JSON.stringify(obj) : obj)
     );
