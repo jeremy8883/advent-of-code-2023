@@ -64,17 +64,20 @@ const getDimKey = (point, grid) =>
     point.y / grid.length
   )}`;
 
-export const runChallengeB = ({ startPoint, grid }, stepCount = 26501365) => {
-  const runStep = (grid, points, completedDims, i) => {
+const logPoints = (grid, points) => {
+  logGrid(
+    map2d((val, x, y) => {
+      return points.has(newPoint(x, y)) ? "O" : val;
+    }, grid)
+  );
+};
+
+export const runStepsWrapped = ({ grid, startPoint }, stepCount) => {
+  const runStep = (grid, points, i) => {
     const newPoints = new ObjectSet();
 
     for (const point of points) {
       for (const neighbour of getHvNeighboursUnsafe(point)) {
-        const dimKey = getDimKey(neighbour, grid);
-        if (completedDims[dimKey]?.finishedAt != null) {
-          continue;
-        }
-
         const wrappedNeighbour = getWrappedPoint(neighbour, grid);
 
         if (grid[wrappedNeighbour.y][wrappedNeighbour.x] === ".") {
@@ -82,43 +85,6 @@ export const runChallengeB = ({ startPoint, grid }, stepCount = 26501365) => {
         }
       }
     }
-
-    // logGrid(
-    //   map2d((val, x, y) => {
-    //     return newPoints.has(newPoint(x, y)) ? "O" : val;
-    //   }, grid)
-    // );
-
-    // console.log(
-    //   reduce2d(
-    //     (acc, val, x, y) => (points.has(newPoint(x, y)) ? acc + 1 : acc),
-    //     0,
-    //     grid
-    //   )
-    // );
-
-    const groups = R.groupBy(
-      (point) => getDimKey(point, grid),
-      newPoints.values()
-    );
-    for (const [key, points] of Object.entries(groups)) {
-      if (!completedDims[key]) {
-        completedDims[key] = { lengths: [points.length], finishedAt: null };
-      } else {
-        if (
-          completedDims[key].lengths.length === 2 &&
-          completedDims[key].lengths[0] === points.length
-        ) {
-          completedDims[key].finishedAt = i;
-        }
-        completedDims[key].lengths = [
-          R.last(completedDims[key].lengths),
-          points.length,
-        ];
-      }
-    }
-
-    console.log(groups);
 
     return newPoints;
   };
@@ -131,10 +97,32 @@ export const runChallengeB = ({ startPoint, grid }, stepCount = 26501365) => {
 
   for (let i = 0; i < stepCount; i++) {
     points = runStep(grid, points, completedDims, i);
-    if (i % 10000 === 0) {
-      console.log(".");
-    }
   }
 
   return points.size;
+};
+
+export const runChallengeB = ({ startPoint, grid }, stepCount = 26501365) => {
+  const wrapCount = Math.floor(stepCount / grid.length);
+  const remainderCount = stepCount % grid.length;
+
+  const x1 = 0;
+  const y1 = runStepsWrapped({ grid, startPoint }, remainderCount);
+  const x2 = 1;
+  const y2 = runStepsWrapped(
+    { grid, startPoint },
+    remainderCount + grid.length
+  );
+  const x3 = 2;
+  const y3 = runStepsWrapped(
+    { grid, startPoint },
+    remainderCount + 2 * grid.length
+  );
+
+  const f = (x) =>
+    (y1 * (x - x2) * (x - x3)) / (x1 - x2) / (x1 - x3) +
+    (y2 * (x - x1) * (x - x3)) / (x2 - x1) / (x2 - x3) +
+    (y3 * (x - x1) * (x - x2)) / (x3 - x1) / (x3 - x2);
+
+  return f(wrapCount);
 };

@@ -1,4 +1,9 @@
-import { runChallengeA, runChallengeB, parseInput } from "./code.js";
+import {
+  runChallengeA,
+  runChallengeB,
+  parseInput,
+  runStepsWrapped,
+} from "./code.js";
 
 const mockInput = parseInput(
   `...........
@@ -15,7 +20,7 @@ const mockInput = parseInput(
 );
 
 describe("Day 21: runChallengeA", () => {
-  xit("gets the results", () => {
+  it("gets the results", () => {
     const result = runChallengeA(mockInput, 6);
     expect(result).toEqual(16);
   });
@@ -29,7 +34,7 @@ describe("Day 21: runChallengeB", () => {
     [100, 6536],
     // [5000, 1673304],
   ])("gets the results", (stepCount, expected) => {
-    const result = runChallengeB(mockInput, stepCount);
+    const result = runStepsWrapped(mockInput, stepCount);
     expect(result).toEqual(expected);
   });
 });
