@@ -1,3 +1,12 @@
+import R from "ramda";
+
+const safeStringify = R.pipe(
+  Object.entries,
+  R.sortBy(([key]) => key),
+  Object.fromEntries,
+  JSON.stringify
+);
+
 export class ObjectSet {
   constructor(getKey) {
     this._getKey = getKey;
@@ -34,7 +43,7 @@ export class ObjectSet {
     }
 
     return (
-      typeof obj + "_" + (typeof obj === "object" ? JSON.stringify(obj) : obj)
+      typeof obj + "_" + (typeof obj === "object" ? safeStringify(obj) : obj)
     );
   }
 
