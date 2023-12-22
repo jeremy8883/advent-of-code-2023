@@ -10,47 +10,75 @@ export const parseInput = (str) =>
           name: module.replace(/[%&]/g, ""),
           operator: module[0],
           dests: outNames.split(", "),
-          state: module[0] === "b" ? null : false,
         },
       ];
     })
   );
 
-const processInput = (module, signals) => {
-  if (module.operator === "b") {
-    if (signals.length > 1) {
-      throw new Error("too many signals?");
-    }
+const getPossibleInputs = (name, modules) => {
+  return Object.entries(modules)
+    .filter(([_, m]) => m.dests.includes(name))
+    .map(([key, m]) => m.name);
+};
 
+const initStates = (modules) => {
+  return R.pipe(
+    Object.entries,
+    R.map(([name, module]) => {
+      return module.operator === "%"
+        ? [name, { ...module, state: false }]
+        : module.operator === "&"
+        ? [
+            name,
+            {
+              ...module,
+              state: Object.fromEntries(
+                getPossibleInputs(module.name, modules).map((name) => [
+                  name,
+                  false,
+                ])
+              ),
+            },
+          ]
+        : [name, { ...module, state: null }];
+    }),
+    Object.fromEntries
+  )(modules);
+};
+
+const processInput = (module, signal, from) => {
+  if (module.operator === "b") {
     return {
       newState: null,
       nextActions: module.dests.map((dest) => ({
-        signal: signals[0],
+        from: module.name,
+        signal: signal,
         dest,
       })),
     };
   } else if (module.operator === "%") {
-    if (signals.length > 1) {
-      throw new Error("too many signals?");
-    }
-
-    if (signals[0] === true) {
-      return [];
+    if (signal === true) {
+      return {
+        newState: module.state,
+        nextActions: [],
+      };
     } else {
       return {
         newState: !module.state,
         nextActions: module.dests.map((dest) => ({
+          from: module.name,
           signal: !module.state,
           dest,
         })),
       };
     }
   } else if (module.operator === "&") {
+    const newState = { ...module.state, [from]: signal };
     return {
-      newState: signals.every((signal) => !!signal),
+      newState,
       nextActions: module.dests.map((dest) => ({
-        // TODO WTF?
-        signal: !signals.every((signal) => !!signal),
+        from: module.name,
+        signal: !Object.values(newState).every((signal) => signal),
         dest,
       })),
     };
@@ -59,32 +87,43 @@ const processInput = (module, signals) => {
   }
 };
 
-export const runChallengeA = (modules) => {
-  const queue = new Map();
-  queue.set("broadcaster", { signals: [false], dest: "broadcaster" });
+export const runChallengeA = (modules, pressCount = 1000) => {
+  modules = initStates(modules);
 
-  const nextQueue = new Map();
+  let lowSignalCount = 0;
+  let highSignalCount = 0;
 
-  while (queue.length) {
-    const next = queue.shift();
-    const { newState, nextActions } = processInput(
-      modules[next.dest],
-      next.signals
-    );
-    modules[next.dest].state = newState;
-    for (const nextAction of nextActions) {
-      if (nextQueue.has(nextAction.dest)) {
-        nextQueue.get(nextAction.dest).signals.push(nextAction.signal);
+  for (let i = 0; i < pressCount; i++) {
+    const queue = [];
+    queue.push({
+      from: "button",
+      signal: false,
+      dest: "broadcaster",
+    });
+
+    while (queue.length) {
+      const thisItem = queue.shift();
+      if (thisItem.signal) {
+        highSignalCount++;
       } else {
-        nextQueue.set(nextAction.dest, {
-          signals: [nextAction.signal],
-          dest: nextAction.dest,
-        });
+        lowSignalCount++;
       }
+      if (!modules[thisItem.dest]) {
+        continue;
+      }
+
+      const { newState, nextActions } = processInput(
+        modules[thisItem.dest],
+        thisItem.signal,
+        thisItem.from
+      );
+      modules[thisItem.dest].state = newState;
+      queue.push(...nextActions);
+      // console.log("next actions", nextActions);
     }
   }
 
-  return result;
+  return lowSignalCount * highSignalCount;
 };
 
 export const runChallengeB = (input) => {

@@ -11,6 +11,19 @@ const mockInput = parseInput(
 describe("Day 20: runChallengeA", () => {
   it("gets the results", () => {
     const result = runChallengeA(mockInput);
+    expect(result).toEqual(32000000);
+  });
+
+  it("gets the results", () => {
+    const result = runChallengeA(
+      parseInput(
+        `broadcaster -> a
+%a -> inv, con
+&inv -> b
+%b -> con
+&con -> output`
+      )
+    );
     expect(result).toEqual(11687500);
   });
 });
