@@ -27,10 +27,3 @@ describe("Day 20: runChallengeA", () => {
     expect(result).toEqual(11687500);
   });
 });
-
-describe("Day 20: runChallengeB", () => {
-  it("gets the results", () => {
-    const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
-  });
-});

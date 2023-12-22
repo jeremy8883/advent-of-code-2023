@@ -119,14 +119,49 @@ export const runChallengeA = (modules, pressCount = 1000) => {
       );
       modules[thisItem.dest].state = newState;
       queue.push(...nextActions);
-      // console.log("next actions", nextActions);
     }
   }
 
   return lowSignalCount * highSignalCount;
 };
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+export const runChallengeB = (modules) => {
+  modules = initStates(modules);
+
+  let hasHitRx = false;
+  let count = 0;
+
+  while (!hasHitRx) {
+    const queue = [];
+    queue.push({
+      from: "button",
+      signal: false,
+      dest: "broadcaster",
+    });
+    count++;
+
+    while (queue.length) {
+      const thisItem = queue.shift();
+
+      if (thisItem.dest === "rx" && !thisItem.signal) {
+        console.log(thisItem);
+        hasHitRx = true;
+        break;
+      }
+
+      if (!modules[thisItem.dest]) {
+        continue;
+      }
+
+      const { newState, nextActions } = processInput(
+        modules[thisItem.dest],
+        thisItem.signal,
+        thisItem.from
+      );
+      modules[thisItem.dest].state = newState;
+      queue.push(...nextActions);
+    }
+  }
+
+  return count;
 };
