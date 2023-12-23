@@ -4,7 +4,10 @@ import {
   parseInput,
   brickIntersects,
   isDestroyable,
+  hasSupport,
+  getDestroyCountsFoxBrick,
 } from "./code.js";
+import { ObjectSet } from "../utils/ObjectSet.js";
 
 const mockInput = parseInput(
   `1,0,1~1,2,1
@@ -55,25 +58,60 @@ describe("brickIntersects", () => {
   });
 });
 
+const allBricks = [
+  { a: { x: 1, y: 0, z: 1 }, b: { x: 1, y: 2, z: 1 } },
+  { a: { x: 0, y: 0, z: 2 }, b: { x: 2, y: 0, z: 2 } },
+  { a: { x: 0, y: 2, z: 2 }, b: { x: 2, y: 2, z: 2 } },
+  { a: { x: 0, y: 0, z: 3 }, b: { x: 0, y: 2, z: 3 } },
+  { a: { x: 2, y: 0, z: 3 }, b: { x: 2, y: 2, z: 3 } },
+  { a: { x: 0, y: 1, z: 4 }, b: { x: 2, y: 1, z: 4 } },
+  { a: { x: 1, y: 1, z: 5 }, b: { x: 1, y: 1, z: 6 } },
+];
+
 describe("isDestroyable", () => {
   it("should work", () => {
     expect(
-      isDestroyable({ a: { x: 1, y: 0, z: 1 }, b: { x: 1, y: 2, z: 1 } }, [
+      isDestroyable(
         { a: { x: 1, y: 0, z: 1 }, b: { x: 1, y: 2, z: 1 } },
-        { a: { x: 0, y: 0, z: 2 }, b: { x: 2, y: 0, z: 2 } },
-        { a: { x: 0, y: 2, z: 2 }, b: { x: 2, y: 2, z: 2 } },
-        { a: { x: 0, y: 0, z: 3 }, b: { x: 0, y: 2, z: 3 } },
-        { a: { x: 2, y: 0, z: 3 }, b: { x: 2, y: 2, z: 3 } },
-        { a: { x: 0, y: 1, z: 4 }, b: { x: 2, y: 1, z: 4 } },
-        { a: { x: 1, y: 1, z: 5 }, b: { x: 1, y: 1, z: 6 } },
-      ])
+        allBricks
+      )
     ).toEqual(false);
+  });
+});
+
+describe("hasSupport", () => {
+  it("should work", () => {
+    const destroyed = new ObjectSet();
+    destroyed.add({ a: { x: 0, y: 1, z: 4 }, b: { x: 2, y: 1, z: 4 } });
+    destroyed.add({ a: { x: 1, y: 1, z: 5 }, b: { x: 1, y: 1, z: 6 } });
+    const result = hasSupport(
+      { a: { x: 0, y: 1, z: 4 }, b: { x: 2, y: 1, z: 4 } },
+      allBricks,
+      destroyed
+    );
+
+    expect(result).toEqual(true);
+  });
+});
+
+describe("getDestroyCountsFoxBrick", () => {
+  it.each([
+    [allBricks[0], 6],
+    [allBricks[1], 0],
+    [allBricks[2], 0],
+    [allBricks[3], 0],
+    [allBricks[4], 0],
+    [allBricks[5], 1],
+    [allBricks[6], 0],
+  ])("should work", (brick, expected) => {
+    const result = getDestroyCountsFoxBrick(brick, allBricks);
+    expect(result).toEqual(expected);
   });
 });
 
 describe("Day 22: runChallengeB", () => {
   it("gets the results", () => {
     const result = runChallengeB(mockInput);
-    expect(result).toEqual("TODO");
+    expect(result).toEqual(7);
   });
 });

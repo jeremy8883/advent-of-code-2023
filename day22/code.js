@@ -1,5 +1,7 @@
 import R from "ramda";
 import { parseInt10 } from "../utils/number.js";
+import { ObjectSet } from "../utils/ObjectSet.js";
+import PriorityQueue from "priorityqueuejs";
 
 export const parseInput = (str) =>
   str.split("\n").map((line) => {
@@ -70,17 +72,11 @@ const settleBricks = R.reduce((acc, val) => {
   const diff = getBottomZ(val) - settledZ;
 
   if (diff === 0) {
-    acc.push(val);
+    return [...acc, val];
   } else {
-    acc.push(moveZ(val, -diff));
+    return [...acc, moveZ(val, -diff)];
   }
-  return acc;
 }, []);
-
-const inRange = (range, val) => {
-  range = R.sort((a, b) => a - b, range);
-  return val >= range[0] && val <= range[0];
-};
 
 const getBricksThatIntersect = (brick, otherBricks) => {
   return otherBricks.filter((b) => {
@@ -112,7 +108,58 @@ export const runChallengeA = R.pipe(
   getDestroyableCount
 );
 
-export const runChallengeB = (input) => {
-  const result = "TODO";
-  return result;
+const getDirectlyAboveBricks = (brick, allBricks) => {
+  const areaAbove = makeZs(brick, getTopZ(brick) + 1);
+  return getBricksThatIntersect(areaAbove, allBricks);
 };
+
+export const hasSupport = (brick, allBricks, destroyed) => {
+  const areaBelow = makeZs(brick, getBottomZ(brick) - 1);
+  const bricksBelow = getBricksThatIntersect(areaBelow, allBricks).filter(
+    (b) => !destroyed.has(b)
+  );
+  return bricksBelow.length !== 0;
+};
+
+const enqAll = (queue, items) => {
+  for (const b of items) {
+    queue.enq(b);
+  }
+};
+
+export const getDestroyCountsFoxBrick = (startBrick, otherBricks) => {
+  const queue = new PriorityQueue((a, b) => getBottomZ(a) - getBottomZ(b));
+  const destroyed = new ObjectSet();
+  destroyed.add(startBrick);
+  enqAll(queue, getDirectlyAboveBricks(startBrick, otherBricks));
+
+  let count = 0;
+
+  while (queue.size()) {
+    const brick = queue.deq();
+
+    if (hasSupport(brick, otherBricks, destroyed)) {
+      continue;
+    }
+    count++;
+    destroyed.add(brick);
+    const bricksAbove = getDirectlyAboveBricks(brick, otherBricks);
+    enqAll(queue, bricksAbove);
+  }
+
+  return count;
+};
+
+const getDestroyCount = (bricks) => {
+  return bricks.reduce(
+    (acc, val) => acc + getDestroyCountsFoxBrick(val, bricks),
+    0
+  );
+};
+
+export const runChallengeB = R.pipe(
+  sortBricks,
+  settleBricks,
+  sortBricks,
+  getDestroyCount
+);
