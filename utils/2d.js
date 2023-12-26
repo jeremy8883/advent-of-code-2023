@@ -30,6 +30,8 @@ export const map2d = R.curry((cb, grid) => {
   return grid.map((row, y) => row.map((cell, x) => cb(cell, x, y)));
 });
 
+export const cloneGrid = (grid) => map2d((v) => v, grid);
+
 export const reduce2d = R.curry((cb, initial, grid) => {
   return grid.reduce(
     (acc, row, y) => row.reduce((acc, cell, x) => cb(acc, cell, x, y), acc),

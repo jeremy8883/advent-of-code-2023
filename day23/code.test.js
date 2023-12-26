@@ -1,4 +1,9 @@
-import { runChallengeA, runChallengeB, parseInput } from "./code.js";
+import {
+  runChallengeA,
+  runChallengeB,
+  parseInput,
+  removeDeadEnds,
+} from "./code.js";
 
 const mockInput = parseInput(
   `#.#####################
@@ -30,6 +35,28 @@ describe("Day 23: runChallengeA", () => {
   it("gets the results", () => {
     const result = runChallengeA(mockInput);
     expect(result).toEqual(94);
+  });
+});
+
+describe("removeDeadEnds", () => {
+  it("works", () => {
+    const result = removeDeadEnds(
+      parseInput(
+        `#.#####################
+#.......#########...###
+#######.#########.#.###
+###...........###.#.###
+###.#####.#.#.........#
+#####################.#`
+      )
+    );
+    expect(result.map((l) => l.join("")).join("\n"))
+      .toEqual(`#.#####################
+#.......#########...###
+#######.#########.#.###
+#######.......###.#.###
+#############.........#
+#####################.#`);
   });
 });
 

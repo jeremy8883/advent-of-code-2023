@@ -1,6 +1,9 @@
 import R from "ramda";
 import { parse2dCharArray } from "../utils/inputParsing.js";
 import {
+  bucketFill,
+  cloneGrid,
+  forEach2d,
   getHvNeighbours,
   getSize,
   logGrid,
@@ -19,6 +22,50 @@ const printPath = (grid, path) => {
   );
   logGrid(newGrid);
 };
+
+const removeDeadEndsSingle = (grid) => {
+  const startPos = newPoint(1, 0);
+  const targetPos = newPoint(grid[0].length - 2, grid.length - 1);
+
+  let blockedGrid = cloneGrid(grid);
+
+  forEach2d((_, x, y) => {
+    const val = blockedGrid[y][x];
+    const pos = newPoint(x, y);
+    if (val !== ".") return;
+
+    const neighboursPoints = getHvNeighbours(pos, blockedGrid).filter((p) => {
+      return blockedGrid[p.y][p.x] === ".";
+    });
+    if (
+      neighboursPoints.length === 1 &&
+      !R.equals(pos, startPos) &&
+      !R.equals(pos, targetPos)
+    ) {
+      blockedGrid[y][x] = "#";
+      return;
+    }
+
+    blockedGrid[y][x] = "X";
+    for (const neighboursPoint of neighboursPoints) {
+      const filledGrid = bucketFill("#", neighboursPoint, blockedGrid);
+      if (
+        filledGrid[startPos.y][startPos.x] === "." &&
+        filledGrid[targetPos.y][targetPos.x] === "."
+      ) {
+        blockedGrid = filledGrid;
+      }
+    }
+    blockedGrid[y][x] = ".";
+  }, blockedGrid);
+
+  return blockedGrid;
+};
+
+export const removeDeadEnds = R.pipe(
+  removeDeadEndsSingle,
+  removeDeadEndsSingle
+);
 
 const getWarpGrid = (grid) => {
   const startPos = newPoint(1, 0);
@@ -179,6 +226,9 @@ export const runChallengeA = (grid) =>
 
 export const runChallengeB = R.pipe(
   map2d((val) => (/[<>v^]/.test(val) ? "." : val)),
+  R.tap(logGrid),
+  removeDeadEnds,
+  R.tap(logGrid),
   (g) => {
     const { grid, warpGrid } = getWarpGrid(g);
     return findLongestPath(grid, warpGrid);
