@@ -10,7 +10,7 @@ const mockInput = parseInput(
 
 describe("Day 24: runChallengeA", () => {
   it("gets the results", () => {
-    const result = runChallengeA(mockInput);
+    const result = runChallengeA(mockInput, 7, 27);
     expect(result).toEqual(2);
   });
 });
