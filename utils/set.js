@@ -5,3 +5,10 @@ export const mergeSets = (...sets) => {
   }
   return newSet;
 };
+
+export const addToSet = (set, item) => {
+  const newSet = new Set(set);
+  newSet.add(item);
+
+  return newSet;
+};
